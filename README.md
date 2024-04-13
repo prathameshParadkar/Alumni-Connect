@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Alumni Connect Platform
+
+This is an Alumni Connect platform built using Next.js for the frontend, Express.js for the backend, and DynamoDB as the database.
+
+## Features
+
+- User Registration: Alumni can register on the platform by providing their details.
+- User Authentication: Alumni can log in to the platform using their credentials.
+- Profile Management: Alumni can update their profile information, including their contact details, work experience, and education history.
+- Alumni Directory: Alumni can search and connect with other registered alumni.
+- Job Board: Alumni can post job opportunities or search for job openings posted by other alumni.
+- Events: Alumni can view and RSVP to upcoming events organized by the alumni community.
+- Messaging: Alumni can communicate with each other through private messages.
+
+## Technologies Used
+
+- Frontend: Next.js, React, CSS
+- Backend: Express.js, Node.js
+- Database: DynamoDB
 
 ## Getting Started
 
-First, run the development server:
+To get started with the Alumni Connect platform, follow these steps:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Clone the repository: `git clone https://github.com/your-username/alumni-connect.git`
+2. Install the dependencies for the frontend and backend:
+   - Frontend: `cd frontend && npm install`
+   - Backend: `cd backend && npm install`
+3. Set up the database:
+   - Create a DynamoDB table to store alumni data.
+   - Configure the database connection in the backend code.
+4. Start the development server:
+   - Frontend: `cd frontend && npm run dev`
+   - Backend: `cd backend && npm run dev`
+5. Access the platform in your browser at `http://localhost:3000`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Contributions are welcome! If you'd like to contribute to the Alumni Connect platform, please follow these guidelines:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Push your changes to your forked repository.
+5. Submit a pull request to the main repository.
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
+This project is licensed under the [MIT License](LICENSE).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contact
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+If you have any questions or suggestions, feel free to reach out to us at [par76.pkar@gmail.com](mailto:par76.pkar@gmail.com).
