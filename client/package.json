@@ -15,6 +15,7 @@
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^1.0.6",
     "@reduxjs/toolkit": "^2.2.3",
+    "axios": "^1.6.8",
     "framer-motion": "^11.0.6",
     "heroicons": "^2.1.1",
     "next": "14.1.0",
