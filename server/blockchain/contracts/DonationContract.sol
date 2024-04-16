@@ -4,18 +4,18 @@ pragma solidity ^0.8.7;
 contract DonationContract {
     struct Donation {
         string userId;
-        string userName; // Added userName attribute
-        string userEmail; // Added userEmail attribute
+        string userName;
+        string userEmail;
         uint256 amount;
         string date;
         uint256 donationId;
         string message;
-        uint256 fundraiseId;
+        string fundraiseId; // Changed fundraiseId to string
     }
 
     mapping(uint256 => Donation) public donations;
     uint256 public donationCount;
-    mapping(uint256 => Donation[]) public donationsByFundraiseId;
+    mapping(string => Donation[]) public donationsByFundraiseId; // Changed type of key to string
 
     event NewDonation(
         string userId,
@@ -25,7 +25,7 @@ contract DonationContract {
         string date,
         uint256 donationId,
         string message,
-        uint256 fundraiseId
+        string fundraiseId
     );
 
     function donate(
@@ -35,7 +35,7 @@ contract DonationContract {
         uint256 _amount,
         string memory _date,
         string memory _message,
-        uint256 _fundraiseId
+        string memory _fundraiseId // Changed type to string
     ) public {
         donationCount++;
         donations[donationCount] = Donation(
@@ -62,7 +62,7 @@ contract DonationContract {
     }
 
     function getDonationsByFundraiseId(
-        uint256 _fundraiseId
+        string memory _fundraiseId // Changed type to string
     ) public view returns (Donation[] memory) {
         return donationsByFundraiseId[_fundraiseId];
     }
@@ -80,7 +80,7 @@ contract DonationContract {
             string memory date,
             uint256 donationId,
             string memory message,
-            uint256 fundraiseId
+            string memory fundraiseId // Changed type to string
         )
     {
         Donation memory donation = donations[_donationId];

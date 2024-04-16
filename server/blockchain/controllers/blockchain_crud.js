@@ -242,7 +242,7 @@ const getComplaintByAuthorityName = async (req, res) => {
 
 const newDonation = async (req, res) => {
   try {
-    const {
+    let {
       userName,
       userEmail,
       userId,
@@ -250,7 +250,8 @@ const newDonation = async (req, res) => {
       message,
       fundraiseId,
     } = req.body;
-
+    // fundraiseId = parseInt(fundraiseId);
+    console.log(req.body)
     const tx = await contractInstance.donate(
       userName,
       userEmail,
@@ -283,6 +284,7 @@ const newDonation = async (req, res) => {
     res.status(200).send({ success: true, data: obj });
 
   } catch (error) {
+    console.log("error", error.message)
     res.status(500).send(error.message);
   }
 }
@@ -290,7 +292,7 @@ const newDonation = async (req, res) => {
 const getDonationByFundraiseId = async (req, res) => {
   try {
     console.log(req.params)
-    const fundraiseId = parseInt(req.params.id);
+    const fundraiseId = req.params.id;
     const tx = await contractInstance.getDonationsByFundraiseId(
       fundraiseId
     );
@@ -301,22 +303,28 @@ const getDonationByFundraiseId = async (req, res) => {
     // const txHash = receipt.transactionHash;
     let resultArray = [];
     const dataArray = tx;
+
+    console.log(dataArray[0][0], dataArray[0][1], dataArray[0][2], dataArray[0][3].toNumber(), dataArray[0][4], dataArray[0][5], dataArray[0][6])
     for (let i = 0; i < dataArray.length; i++) {
+      // console.log(fundraiseId)
       let obj = {
         userName: dataArray[i][0],
         userEmail: dataArray[i][1],
         userId: dataArray[i][2],
-        amount: dataArray[1][3].toNumber(),
+        amount: dataArray[i][3].toNumber(),
         date: dataArray[i][4],
         donationId: dataArray[i][5].toNumber(),
         message: dataArray[i][6],
         fundraiseId: fundraiseId,
       };
+      // console.log("obj", obj)
       resultArray.push(obj);
+      // console.log('ok')
     }
 
     res.status(200).json({ success: true, data: resultArray });
   } catch (err) {
+    console.log(err.message)
     res.status(500).json({ error: err.message });
   }
 }
