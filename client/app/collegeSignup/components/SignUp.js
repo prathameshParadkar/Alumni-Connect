@@ -1,42 +1,50 @@
 "use client";
+import { useState } from 'react';
 import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
+import React from 'react'
 
 const SignUp = () => {
-    const router = useRouter()
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState(""); 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-      
-        const formData = {
-          email: email,
-          password: password
-        };
-      
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: ''
+    });
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-          const response = await fetch("http://localhost:5000/api/auth/login", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(formData),
-            credentials: "include"
-          });
-      
-          if (response.ok) {
-            // Registration successful, handle redirection or display success message
-            console.log(response);
-            router.push('/dashboard');
-          } else {
-            alert("Registration failed");
-            console.error("Registration failed");
-          }
+            const response = await fetch('http://localhost:5000/api/auth/register/college', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            if (response.ok) {
+                const data = await response.json();
+                alert('College registered successfully!'); // Display alert
+                window.location.reload();
+                // Redirect or perform any action after successful registration
+            } else {
+                const errorData = await response.json();
+                console.error('Registration failed:', errorData.message);
+                alert('Registration Failed!');
+                // Handle registration error
+            }
         } catch (error) {
-          alert("Registration error");
-          console.error("Registration error:", error.message);
+            console.error('Registration error:', error.message);
+            alert('Registration Failed!');
+            // Handle network or other errors
         }
-      };
+    };
+    const router = useRouter()
+    const onSignIn = () => {
+        router.push('/collegeSignup/collegedetails')
+    }
 
     return (
         <div className="min-h-screen flex">
@@ -48,7 +56,7 @@ const SignUp = () => {
                             src="/assets/logo.png"
                             alt="Workflow"
                         />
-                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Sign Up</h2>
                         {/* <p className="mt-2 text-sm text-gray-600">
                             Or{' '}
                             <a href="#" className="font-medium text-[#0054D0] hover:text-[#0054D0]">
@@ -58,7 +66,7 @@ const SignUp = () => {
                     </div>
 
                     <div className="mt-8">
-                        <div>
+                        {/* <div>
                             <div>
                                 <p className="text-lg font-medium text-gray-700">Sign in with</p>
 
@@ -86,10 +94,27 @@ const SignUp = () => {
                                     <span className="px-2 bg-white text-gray-500">Or continue with</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="mt-6">
                             <form action="#" method="POST" className="space-y-6">
+                            <div>
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                        Name
+                                    </label>
+                                    <div className="mt-1">
+                                        <input
+                                            id="name"
+                                            name="name"
+                                            type="text"
+                                            autoComplete="name"
+                                            required
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0054D0] focus:border-[#0054D0] sm:text-sm"
+                                        />
+                                    </div>
+                                </div>
                                 <div>
                                     <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                         Email address
@@ -101,8 +126,8 @@ const SignUp = () => {
                                             type="email"
                                             autoComplete="email"
                                             required
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
+                                            value={formData.email}
+                                            onChange={handleChange}
                                             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0054D0] focus:border-[#0054D0] sm:text-sm"
                                         />
                                     </div>
@@ -119,8 +144,8 @@ const SignUp = () => {
                                             type="password"
                                             autoComplete="current-password"
                                             required
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
+                                            value={formData.password}
+                                            onChange={handleChange}
                                             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0054D0] focus:border-[#0054D0] sm:text-sm"
                                         />
                                     </div>
@@ -147,16 +172,6 @@ const SignUp = () => {
                                 </div>
 
                                 <div>
-                                    <div className="text-sm mb-1">
-                                        <a href="/collegeSignup" className="font-medium text-[#0054D0] hover:text-[#0054D0]">
-                                            Sign up for College
-                                        </a>
-                                    </div>
-                                    <div className="text-sm mb-2">
-                                        <a href="/studentSignup" className="font-medium text-[#0054D0] hover:text-[#0054D0]">
-                                            Sign up for Student/Alumni
-                                        </a>
-                                    </div>
                                     <button
                                         type="submit"
                                         className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0054D0] hover:bg-[#0054D0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0054D0]"
@@ -173,7 +188,7 @@ const SignUp = () => {
             <div className="hidden lg:block relative w-0 flex-1">
                 <img
                     className="absolute inset-0 h-full w-full object-cover"
-                    src="/assets/alumni-signup.jpg"
+                    src="/assets/college-signup.jpeg"
                     alt=""
                 />
             </div>
