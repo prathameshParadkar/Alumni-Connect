@@ -15,7 +15,8 @@ const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon, current: false },
     { name: "Jobs", href: "/jobs", icon: UsersIcon, current: false },
     { name: "Events", href: "/events", icon: CalendarIcon, current: false },
-    { name: "Alumni Search", href: "#", icon: FolderIcon, current: false },
+//    { name: "Alumni Search", href: "#", icon: FolderIcon, current: false },
+    { name: "Fund Raiser", href: "/fundRaiser", icon: FolderIcon, current: false },
     // { name: "Documents", href: "#", icon: InboxIcon, current: false },
     // { name: "Reports", href: "#", icon: ChartBarIcon, current: false },
 ];

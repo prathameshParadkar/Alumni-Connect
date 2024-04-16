@@ -5,6 +5,7 @@ import { CalendarIcon, LocationMarkerIcon, UsersIcon } from '@heroicons/react/so
 import { UserIcon } from '@heroicons/react/outline';
 import API, { getAllfundraisers } from '../../../api/index';
 import axios from 'axios';
+import { Progress } from '@chakra-ui/react';
 
 const url = 'http://localhost:5000';
 const List = () => {
@@ -82,7 +83,7 @@ const List = () => {
                         const date = new Date(fundraiser.deadline).toLocaleDateString();
                         return (
                         <li key={fundraiser._id}>
-                            <a href="#" className="block hover:bg-gray-50">
+                            <a href="/donation" className="block hover:bg-gray-50">
                                 <div className="px-4 py-4 sm:px-6">
                                     <div className="flex items-center justify-between">
                                         <p className="text-sm font-medium text-indigo-600 truncate">{fundraiser.title}</p>
@@ -100,6 +101,11 @@ const List = () => {
                                                 Created By {fundraiser.alumniName}
                                             </p>
                                         </div>
+                                        <p className='font-bold self-center text-sm text-gray-500'>₹{fundraiser.currentAmount}</p>
+                                        <div className="flex w-1/4 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '15%' }}> </div>
+                                        </div>
+                                        <p className='text-sm font-bold text-gray-500 self-center'>₹{fundraiser.targetAmount}</p>
                                         <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                                             
                                         </div>
