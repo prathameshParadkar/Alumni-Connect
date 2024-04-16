@@ -6,7 +6,7 @@ const axios = require('axios');
 const e = require('express');
 const { ObjectId } = require('mongodb');
 
-const url = 'http://localhost:8080/blockchain';
+const url = 'http://3.108.236.192:8080/blockchain';
 
 
 router.get('/', async (req, res) => {
@@ -113,9 +113,12 @@ const donate = async (req, res,) => {
         if (!fundraiser) {
             return res.status(404).json({ message: 'Fundraiser not found' });
         }
+
+        console.log({ ...req.body, fundraiseId: `${fundraiserId}` })
         // const response = 'hey'
         const response = await axios.post(url + '/create', { ...req.body, fundraiseId: `${fundraiserId}` });
 
+        console.log(response.data.data)
         // update currentAmount in fundraiser
         fundraiser.currentAmount += amount;
         await fundraiser.save();
