@@ -25,7 +25,7 @@ router.get('/alumni', async (req, res) => {
     }
 });
 
-router.get('/studentById', async (req, res) => {
+router.post('/studentById', async (req, res) => {
     try {
         const { id } = req.body; // Get the ID from request body
         const student = await Student.findById(id, 'name'); // Fetch only the name field using the ID

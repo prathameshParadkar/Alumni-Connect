@@ -9,8 +9,8 @@ const List = () => {
     const [positions, setPositions] = useState([]);
     const [userNames, setUserNames] = useState([]);
 
-    useEffect(async() =>{
-        await fetch(`${url}/api/job-list`)
+    useEffect(() =>{
+        fetch(`${url}/api/job-list`)
             .then(response => response.json())
             .then(data => {
                 setPositions(data);
@@ -33,11 +33,11 @@ const List = () => {
     const fetchUserName = async (id) => {
         try {
             const response = await fetch(`${url}/api/studentById`, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id: id })
+                body: JSON.stringify({ id })
             });
             const userData = await response.json();
             return userData.name;
@@ -46,8 +46,17 @@ const List = () => {
             return 'Unavailable';
         }
     };
+    useEffect(() => {
+        if (positions.length > 0 && userNames.length > 0) {
+            const updatedPositions = positions.map((position, index) => ({
+                ...position,
+                userName: userNames[index] // Append user name to position
+            }));
+            setPositions(updatedPositions);
+        }
+    }, []);
+    
     console.log(positions);
-    console.log(userNames);
     {/*const positions = [
         {
             id: 1,
@@ -117,7 +126,7 @@ const List = () => {
                                             </p>
                                             <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
                                                 <UserIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                                                {}
+                                                {position.userName}
                                             </p>
                                         </div>
                                         <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
