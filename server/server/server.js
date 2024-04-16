@@ -8,6 +8,8 @@ const eventAndJobRoutes = require('./routes/eventAndJobRoutes');
 const collegeRotues = require('./routes/collegeRoutes');
 const userRoutes = require('./routes/userRoutes');
 const fundraiserRoutes = require('./routes/fundraiserRoutes');
+const { authenticate } = require('./middleware/authenticate');
+const verifyTokenFromCookie = require('./middleware/verifyToken');
 require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -43,6 +45,7 @@ app.use('/api', collegeRotues);
 app.use('/api', userRoutes);
 // Start the server
 app.get('/', (req, res) => {
+    console.log(req.body);
     res.send('Welcome to the server!');
 });
 
