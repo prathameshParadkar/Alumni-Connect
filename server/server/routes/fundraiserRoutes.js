@@ -6,7 +6,7 @@ const axios = require('axios');
 const e = require('express');
 const { ObjectId } = require('mongodb');
 
-const url = 'http://3.108.236.192:8080/blockchain';
+const url = 'http://localhost:8080/blockchain';
 
 
 router.get('/', async (req, res) => {
@@ -73,7 +73,7 @@ router.put('/:id', async (req, res) => {
 });
 
 
-const getFundraiserById = async (req, res, next) => {
+const getFundraiserById = async (req, res) => {
     try {
         const fundraiserId = req.params.id;
         const fundraiser = await Fundraiser.findById(ObjectId(fundraiserId));
