@@ -8,7 +8,7 @@ const page = () => {
     const router = useRouter();
     //console.log(user);
     const handleAddJobClick = () => {
-        router.push('/fundaiser/fundraiserPosting'); // Navigate to the specified page
+        router.push('/fundRaiser/fundraiserPosting'); // Navigate to the specified page
     };
     return (
         <div className='space-y-5'>

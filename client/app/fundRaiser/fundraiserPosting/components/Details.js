@@ -2,97 +2,114 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import React from "react";
-import jwt from 'jsonwebtoken'; // Use a library like jwt-decode to decode JWT tokens
+import jwt from "jsonwebtoken"; // Use a library like jwt-decode to decode JWT tokens
 
 const Details = () => {
-    const router = useRouter();
-    const [user, setUser] = useState(null);
-
-    useEffect(() => {
-        const getTokenFromCookie = () => {
-          const cookies = document.cookie.split('; ');
-          const cookie = cookies.find((c) => c.startsWith('token='));
-          if (cookie) {
-            const token = cookie.split('=')[1];
-            return token;
-          }
-          return null;
-        };
-    
-        const decodeToken = (token) => {
-          if (token) {
-            try {
-              const decoded = jwt.decode(token);
-              //console.log('Decoded token:', decoded);
-              setUser(decoded);
-            } catch (error) {
-              console.error('Error decoding token:', error.message);
-            }
-          }
-        };
-    
-        const token = getTokenFromCookie();
-        decodeToken(token);
-    }, []);
-    
-    const [jobDetails, setJobDetails] = useState({
-        title: "",
-        field: "",
-        location: "",
-        fullorpart: "",
-        closingDate: "",
-    });
-
-    // Update job details state on input change
-    const handleChange = (e) => {
-        setJobDetails(prevState => ({
-            ...prevState,
-            [e.target.name]: e.target.value
-        }));
+  const url = "http://localhost:5000";
+  const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [colleges, setColleges] = useState([]);
+  useEffect(() => {
+    const getTokenFromCookie = () => {
+      const cookies = document.cookie.split("; ");
+      const cookie = cookies.find((c) => c.startsWith("token="));
+      if (cookie) {
+        const token = cookie.split("=")[1];
+        return token;
+      }
+      return null;
     };
 
-    const onSubmit = async (e) => {
-        e.preventDefault(); // Prevent default form submission behavior
-
-        const postedBy = user.userId; // This should be taken from user state if available
-        console.log(postedBy);
-        const jobData = {
-            ...jobDetails,
-            postedBy: postedBy
-        };
-
+    const decodeToken = (token) => {
+      if (token) {
         try {
-            const response = await fetch('http://localhost:5000/api/jobs', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(jobData)
-            });
-
-            if (!response.ok) {
-                alert('Failed to submit job');
-            }
-            else{
-                alert('Job submitted successfully');
-                // Navigate back to the home page or confirmation page after successful post
-                router.push("/jobs");
-            }
+          const decoded = jwt.decode(token);
+          //console.log('Decoded token:', decoded);
+          setUser(decoded);
         } catch (error) {
-            console.error('Failed to submit job:', error);
+          console.error("Error decoding token:", error.message);
         }
+      }
     };
-    return (
-        <div className="px-28 py-8">
-            <div className="px-4 sm:px-0 mb-4">
-                <h3 className="text-3xl font-bold leading-6 text-[#0054D0]">Fundraising Details</h3>
-                <p className="mt-1 text-sm text-gray-600">
-                    This information will be required to post a new job.
-                </p>
-            </div>
-            <div>
-                <div className="md:grid md:grid-cols-3 md:gap-6">
-                    {/*<div className="md:col-span-1">
+
+    const token = getTokenFromCookie();
+    decodeToken(token);
+    const fetchColleges = async () => {
+      try {
+        const response = await fetch(`${url}/api/colleges`);
+        if (response.ok) {
+          const data = await response.json();
+          setColleges(data);
+        } else {
+          console.error("Failed to fetch colleges");
+        }
+      } catch (error) {
+        console.error("Fetch colleges error:", error.message);
+      }
+    };
+
+    fetchColleges();
+  }, []);
+  console.log(user)
+  const [fundDetails, setFundDetails] = useState({
+    title: "",
+    description: "",
+    targetAmount: "",
+    deadline: "",
+    collegeId: "",
+  });
+
+  // Update job details state on input change
+  const handleChange = (e) => {
+    setFundDetails((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
+
+    const createId = user.userId;
+    
+    const fundData = {
+      ...fundDetails,
+      createdBy: createId
+    };
+
+    try {
+      const response = await fetch(`${url}/api/fundraiser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(fundData),
+      });
+
+      if (!response.ok) {
+        alert("Failed to submit fundraiser");
+      } else {
+        alert("Fundraiser submitted successfully");
+        // Navigate back to the home page or confirmation page after successful post
+        router.push("/fundRaiser");
+      }
+    } catch (error) {
+      console.error("Failed to submit fundraiser:", error);
+    }
+  };
+  return (
+    <div className="px-28 py-8">
+      <div className="px-4 sm:px-0 mb-4">
+        <h3 className="text-3xl font-bold leading-6 text-[#0054D0]">
+          Fundraising Details
+        </h3>
+        <p className="mt-1 text-sm text-gray-600">
+          This information will be required to post a new job.
+        </p>
+      </div>
+      <div>
+        <div className="md:grid md:grid-cols-3 md:gap-6">
+          {/*<div className="md:col-span-1">
                         <div className="px-4 sm:px-0">
                             <h3 className="text-lg font-medium leading-6 text-gray-900">Your details in college</h3>
                             <p className="mt-1 text-sm text-gray-600">
@@ -100,101 +117,120 @@ const Details = () => {
                             </p>
                         </div>
                     </div>*/}
-                    <div className="mt-5 md:mt-0 md:col-span-2">
-                        <form onSubmit={onSubmit}>
-                            <div className="shadow sm:rounded-md sm:overflow-hidden">
-                                <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
-                                    <div className="grid grid-cols-3 gap-6">
-                                        <div className="col-span-3 sm:col-span-2">
-                                            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                                                Title of the Job
-                                            </label>
-                                            <div className="mt-1 flex rounded-md shadow-sm">
-
-                                                <input
-                                                    type="text"
-                                                    name="title"
-                                                    id="title"
-                                                    onChange={handleChange}
-                                                    value={jobDetails.title}
-                                                    className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full px-2 py-2 rounded-md sm:text-sm border-gray-300"
-                                                    placeholder="Frontend Developer"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-6">
-                                        <div className="col-span-3 sm:col-span-2">
-                                            <label htmlFor="field" className="block text-sm font-medium text-gray-700">
-                                                Field
-                                            </label>
-                                            <div className="mt-1 flex rounded-md shadow-sm">
-
-                                                <input
-                                                    type="text"
-                                                    name="field"
-                                                    id="field"
-                                                    onChange={handleChange}
-                                                    value={jobDetails.field}
-                                                    className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full px-2 py-2 rounded-md sm:text-sm border-gray-300"
-                                                    placeholder="Engineering"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-6">
-                                        <div className="col-span-3 sm:col-span-2">
-                                            <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                                                Location
-                                            </label>
-                                            <div className="mt-1 flex rounded-md shadow-sm">
-
-                                                <input
-                                                    type="text"
-                                                    name="location"
-                                                    id="location"
-                                                    onChange={handleChange}
-                                                    value={jobDetails.location}
-                                                    className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full px-2 py-2 rounded-md sm:text-sm border-gray-300"
-                                                    placeholder="Remote"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-span-3 sm:col-span-2">
-                                            <label htmlFor="time" className="block text-sm font-medium text-gray-700">
-                                                Full Time/Part Time
-                                            </label>
-                                            <div className="mt-1 flex rounded-md shadow-sm">
-
-                                                <input
-                                                    type="text"
-                                                    name="fullorpart"
-                                                    id="time"
-                                                    onChange={handleChange}
-                                                    value={jobDetails.fullorpart}
-                                                    className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full px-2 py-2 rounded-md sm:text-sm border-gray-300"
-                                                    placeholder="Full/Time"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-span-3 sm:col-span-2">
-                                            <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-                                                Closing Date
-                                            </label>
-                                            <div className="mt-1 flex rounded-md shadow-sm">
-                                                <input
-                                                    type="text"
-                                                    name="closingDate"
-                                                    id="date"
-                                                    onChange={handleChange}
-                                                    value={jobDetails.closingDate}
-                                                    className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full px-2 py-2 rounded-md sm:text-sm border-gray-300"
-                                                    placeholder="YYYY/MM/DD"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {/*<div className="col-span-6 sm:col-span-3">
+          <div className="mt-5 md:mt-0 md:col-span-2">
+            <form onSubmit={onSubmit}>
+              <div className="shadow sm:rounded-md sm:overflow-hidden">
+                <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="col-span-3 sm:col-span-2">
+                      <label
+                        htmlFor="title"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Title
+                      </label>
+                      <div className="mt-1 flex rounded-md shadow-sm">
+                        <input
+                          type="text"
+                          name="title"
+                          id="title"
+                          onChange={handleChange}
+                          value={fundDetails.title}
+                          className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full px-2 py-2 rounded-md sm:text-sm border-gray-300"
+                          placeholder="For Scholarship"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="col-span-3 sm:col-span-2">
+                      <label
+                        htmlFor="desc"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Description
+                      </label>
+                      <div className="mt-1 flex rounded-md shadow-sm">
+                        <textarea
+                          type="text"
+                          name="description"
+                          id="desc"
+                          onChange={handleChange}
+                          value={fundDetails.description}
+                          className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full px-2 py-2 rounded-md sm:text-sm border-gray-300"
+                          placeholder="Description for your fund raising"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="col-span-3 sm:col-span-2">
+                      <label
+                        htmlFor="target-amount"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Target Amount
+                      </label>
+                      <div className="mt-1 flex rounded-md shadow-sm">
+                        <input
+                          type="number"
+                          name="targetAmount"
+                          id="target-amount"
+                          onChange={handleChange}
+                          value={fundDetails.targetAmount}
+                          className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full px-2 py-2 rounded-md sm:text-sm border-gray-300"
+                          placeholder="000000"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-span-3 sm:col-span-2">
+                      <label
+                        htmlFor="deadline"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Deadline
+                      </label>
+                      <div className="mt-1 flex rounded-md shadow-sm">
+                        <input
+                          type="date"
+                          name="deadline"
+                          id="deadline"
+                          onChange={handleChange}
+                          value={fundDetails.deadline}
+                          className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full px-2 py-2 rounded-md sm:text-sm border-gray-300"
+                          placeholder="Full/Time"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="college"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Select Your College
+                      </label>
+                      <div className="mt-1">
+                        <select
+                          id="college"
+                          name="collegeId"
+                          required
+                          value={fundDetails.collegeId}
+                          onChange={handleChange}
+                          className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
+                        >
+                          <option value="" className="px-3 py-2">
+                            Select a college
+                          </option>
+                          {colleges.map((college) => (
+                            <option key={college._id} value={college._id}>
+                              {college.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  {/*<div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="country" className="block text-sm font-medium text-gray-700">
                                             Select your college
                                         </label>
@@ -210,7 +246,7 @@ const Details = () => {
                                         </select>
                 </div>*/}
 
-                                    {/*<div>
+                  {/*<div>
                                         <label className="block text-sm font-medium text-gray-700">College ID</label>
                                         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                                             <div className="space-y-1 text-center">
@@ -243,21 +279,22 @@ const Details = () => {
                                             </div>
                                         </div>
                 </div>*/}
-                                </div>
-                                <div className="px-4 py-3 bg-gray-50 text-left sm:px-6">
-                                    <button
-                                        // type="submit"
-                                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#0054D0] hover:bg-[#0054D0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                    >
-                                        Add
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
                 </div>
-            </div></div>
-    );
+                <div className="px-4 py-3 bg-gray-50 text-left sm:px-6">
+                  <button
+                    // type="submit"
+                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#0054D0] hover:bg-[#0054D0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Details;

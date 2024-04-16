@@ -103,7 +103,7 @@ const List = () => {
                                         </div>
                                         <p className='font-bold self-center text-sm text-gray-500'>₹{fundraiser.currentAmount}</p>
                                         <div className="flex w-1/4 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '15%' }}> </div>
+                                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${(fundraiser.currentAmount/fundraiser.targetAmount)*100}%` }}> </div>
                                         </div>
                                         <p className='text-sm font-bold text-gray-500 self-center'>₹{fundraiser.targetAmount}</p>
                                         <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
