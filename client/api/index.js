@@ -14,3 +14,9 @@ const API = axios.create({
 //      "description":"Engineering College"
 // }
 export const registerCollege = (collegeData) => API.post("/college/register", collegeData);
+
+export const getAllfundraisers = () => API.get("/fundraiser");
+
+export const getfundraisersById = () => API.get("/fundraiser/:id");
+
+export const createfundraiser = (fundraiserData) => API.post("/fundraiser/", fundraiserData);
