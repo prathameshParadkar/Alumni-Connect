@@ -6,6 +6,7 @@ const studentSchema = new mongoose.Schema({
     password: { type: String, required: true },
     linkedinId: { type: String },
     collegeId: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true },
+    image: { type: String },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });
