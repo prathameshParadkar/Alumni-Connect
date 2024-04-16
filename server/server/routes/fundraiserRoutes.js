@@ -6,7 +6,7 @@ const axios = require('axios');
 const e = require('express');
 const { ObjectId } = require('mongodb');
 
-const url = 'http://localhost:8080/blockchain';
+const url = 'http://3.108.236.192:8080/blockchain';
 
 
 router.get('/', async (req, res) => {
