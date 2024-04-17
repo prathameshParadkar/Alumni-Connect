@@ -14,9 +14,10 @@ This is an Alumni Connect platform built using Next.js for the frontend, Express
 
 ## Technologies Used
 
-- Frontend: Next.js, React, CSS
+- Frontend: Next.js, Tailwind CSS
 - Backend: Express.js, Node.js
-- Database: DynamoDB
+- Database: MongoDB
+- Web3: Solidity, Hardhat, Ethers.js
 
 ## Getting Started
 
@@ -43,10 +44,6 @@ Contributions are welcome! If you'd like to contribute to the Alumni Connect pla
 3. Make your changes and commit them.
 4. Push your changes to your forked repository.
 5. Submit a pull request to the main repository.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
