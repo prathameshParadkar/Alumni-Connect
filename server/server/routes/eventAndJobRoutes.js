@@ -7,8 +7,8 @@ const Job = require('../models/job');
 // Route to create a new event
 router.post('/events', async (req, res) => {
     try {
-        const { title, description, date, location, postedBy, collegeId } = req.body;
-        const event = await Event.create({ title, description, date, location, postedBy, collegeId });
+        const { title, description, date, location, organize, collegeId } = req.body;
+        const event = await Event.create({ title, description, date, location, organize, collegeId });
         res.status(201).json(event);
     } catch (error) {
         console.error(error.message);
@@ -32,6 +32,16 @@ router.get('/job-list', async (req, res) => {
     try {
         const jobs = await Job.find();
         res.status(200).json(jobs);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.get('/event-list', async (req, res) => {
+    try {
+        const events = await Event.find();
+        res.status(200).json(events);
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server Error');
