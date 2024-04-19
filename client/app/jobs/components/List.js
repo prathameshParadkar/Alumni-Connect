@@ -1,10 +1,54 @@
+'use client'
 import React from 'react'
+import { useState, useEffect } from 'react';
 import { CalendarIcon, LocationMarkerIcon, UsersIcon } from '@heroicons/react/solid'
 import { UserIcon } from '@heroicons/react/outline'
 
 const List = () => {
+    const url = 'http://localhost:5000';
+    const [positions, setPositions] = useState([]);
+    const [userNames, setUserNames] = useState([]);
 
-    const positions = [
+    useEffect(async() =>{
+        await fetch(`${url}/api/job-list`)
+            .then(response => response.json())
+            .then(data => {
+                setPositions(data);
+                fetchUserNames(data);
+            })
+            .catch(error => console.error('Error fetching job listings:', error));
+    }, []);
+
+    const fetchUserNames = async (positions) => {
+        try {
+            const names = await Promise.all(
+                positions.map(position => fetchUserName(position.postedBy))
+            );
+            setUserNames(names);
+        } catch (error) {
+            console.error('Error fetching user names:', error);
+        }
+    };
+
+    const fetchUserName = async (id) => {
+        try {
+            const response = await fetch(`${url}/api/studentById`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id })
+            });
+            const userData = await response.json();
+            return userData.name;
+        } catch (error) {
+            console.error(`Error fetching user name for ID ${id}:`, error);
+            return 'Unavailable';
+        }
+    };
+    console.log(positions);
+    console.log(userNames);
+    {/*const positions = [
         {
             id: 1,
             title: 'Back End Developer',
@@ -32,7 +76,7 @@ const List = () => {
             closeDate: '2020-01-14',
             closeDateFull: 'January 14, 2020',
         },
-    ]
+    ]*/}
     return (
         <>
             <form className="w-full">
@@ -57,7 +101,7 @@ const List = () => {
                                         <p className="text-sm font-medium text-indigo-600 truncate">{position.title}</p>
                                         <div className="ml-2 flex-shrink-0 flex">
                                             <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                {position.type}
+                                                {position.fullorpart}
                                             </p>
                                         </div>
                                     </div>
@@ -65,7 +109,7 @@ const List = () => {
                                         <div className="sm:flex">
                                             <p className="flex items-center text-sm text-gray-500">
                                                 <UsersIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                                                {position.department}
+                                                {position.field}
                                             </p>
                                             <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
                                                 <LocationMarkerIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -73,13 +117,13 @@ const List = () => {
                                             </p>
                                             <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
                                                 <UserIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                                                Created By XYZ
+                                                {}
                                             </p>
                                         </div>
                                         <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                                             <CalendarIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                                             <p>
-                                                Closing on <time dateTime={position.closeDate}>{position.closeDateFull}</time>
+                                                Closing on <time>{position.closingDate}</time>
                                             </p>
                                         </div>
                                     </div>

@@ -19,9 +19,19 @@ router.post('/events', async (req, res) => {
 // Route to create a new job
 router.post('/jobs', async (req, res) => {
     try {
-        const { title, description, postedBy, collegeId } = req.body;
-        const job = await Job.create({ title, description, postedBy, collegeId });
+        const { title, field, location, fullorpart, closingDate, postedBy } = req.body;
+        const job = await Job.create({ title, field, location, fullorpart, closingDate, postedBy });
         res.status(201).json(job);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.get('/job-list', async (req, res) => {
+    try {
+        const jobs = await Job.find();
+        res.status(200).json(jobs);
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server Error');
