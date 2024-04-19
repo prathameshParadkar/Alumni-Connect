@@ -1,11 +1,30 @@
 "use client";
 import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 const SignUp = () => {
     const router = useRouter()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState(""); 
+    const [colleges, setColleges] = useState([]);
+    const [collegeName, setCollegeName] = useState("");
+    useEffect(() => {
+        const fetchColleges = async () => {
+          try {
+            const response = await fetch(`http://localhost:5000/api/colleges`);
+            if (response.ok) {
+              const data = await response.json();
+              setColleges(data);
+            } else {
+              console.error("Failed to fetch colleges");
+            }
+          } catch (error) {
+            console.error("Fetch colleges error:", error.message);
+          }
+        };
+    
+        fetchColleges();
+      }, []);
     const handleSubmit = async (event) => {
         event.preventDefault();
       
@@ -37,6 +56,22 @@ const SignUp = () => {
           console.error("Registration error:", error.message);
         }
       };
+      const handleLinkedInSignIn = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/linkedin', {
+                method: 'GET'
+            });
+    
+            if (response.ok) {
+                console.log('LinkedIn sign-in successful');
+                // Handle any further actions if needed
+            } else {
+                console.error('LinkedIn sign-in failed');
+            }
+        } catch (error) {
+            console.error('Error signing in with LinkedIn:', error.message);
+        }
+    };
 
     return (
         <div className="min-h-screen flex">
@@ -66,6 +101,7 @@ const SignUp = () => {
                                     <div>
                                         <a
                                             href="#"
+                                            onClick={handleLinkedInSignIn}
                                             className="w-full inline-flex justify-center py-4 px-6 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                                         >
                                             <span className="sr-only">Sign in with LinkedIn</span>
@@ -74,7 +110,33 @@ const SignUp = () => {
                                         </a>
                                     </div>
 
-
+                                    <div className="space-y-1">
+                  {/* <label
+                    htmlFor="college"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Select Your College
+                  </label> */}
+                  <div className="mt-1">
+                    <select
+                      id="college"
+                      name="college"
+                      required
+                      value={collegeName}
+                      onChange={(e) => setCollegeName(e.target.value)}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
+                    >
+                      <option value="" className="px-3 py-2">
+                        Select a college
+                      </option>
+                      {colleges.map((college) => (
+                        <option key={college._id} value={college.name}>
+                          {college.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
                                 </div>
                             </div>
 

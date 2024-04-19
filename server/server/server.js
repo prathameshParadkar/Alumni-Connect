@@ -7,7 +7,13 @@ const protectedRoutes = require('./routes/protectedRoutes');
 const eventAndJobRoutes = require('./routes/eventAndJobRoutes');
 const collegeRotues = require('./routes/collegeRoutes');
 const userRoutes = require('./routes/userRoutes');
+const linkedinRoutes = require('./routes/linkedRoute');
 const fundraiserRoutes = require('./routes/fundraiserRoutes');
+const session = require('express-session');
+const passport = require('passport');
+const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
+const axios = require('axios');
+const jwt = require('jwt-simple');
 const { authenticate } = require('./middleware/authenticate');
 const verifyTokenFromCookie = require('./middleware/verifyToken');
 require('dotenv').config();
@@ -31,6 +37,35 @@ const corsOptions = {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
+app.use(express.static('public'));
+app.use(session({ secret: 'secret', resave: true, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport setup
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.use(
+  new LinkedInStrategy(
+    {
+      clientID: process.env.LINKEDIN_CLIENT_ID,
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+      callbackURL: 'https://2d0f-2409-4040-e06-2c3a-8437-a7cf-cdac-dad9.ngrok-free.app/auth/linkedin/callback',
+      scope: ['openid', 'profile', 'email'],
+      state: true,
+    },
+    // print name and email
+    async (accessToken, refreshToken, profile, done) => {
+      done(null, user);
+    }
+  )
+);
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
@@ -43,6 +78,7 @@ app.use('/api', eventAndJobRoutes);
 app.use('/api/fundraiser', fundraiserRoutes);
 app.use('/api', collegeRotues);
 app.use('/api', userRoutes);
+app.use('/api', linkedinRoutes);
 // Start the server
 app.get('/', (req, res) => {
     console.log(req.body);
