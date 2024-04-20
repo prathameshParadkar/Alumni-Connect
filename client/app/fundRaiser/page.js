@@ -7,6 +7,16 @@ import { useRouter } from 'next/navigation'
 const page = () => {
     const router = useRouter();
     //console.log(user);
+    useEffect(() => {
+        const isTokenSetInCookie = () => {
+            const cookies = document.cookie.split("; ");
+            const tokenCookie = cookies.find(cookie => cookie.startsWith("token="));
+            return tokenCookie !== undefined;
+        };
+        if (!isTokenSetInCookie()) {
+            router.push("/signup");
+        }
+    }, []);
     const handleAddJobClick = () => {
         router.push('/fundRaiser/fundraiserPosting'); // Navigate to the specified page
     };

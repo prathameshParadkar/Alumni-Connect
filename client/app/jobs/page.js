@@ -6,6 +6,16 @@ import { useRouter } from 'next/navigation'
 
 const page = () => {
     const router = useRouter();
+    useEffect(() => {
+        const isTokenSetInCookie = () => {
+            const cookies = document.cookie.split("; ");
+            const tokenCookie = cookies.find(cookie => cookie.startsWith("token="));
+            return tokenCookie !== undefined;
+        };
+        if (!isTokenSetInCookie()) {
+            router.push("/signup");
+        }
+    }, []);
     //console.log(user);
     const handleAddJobClick = () => {
         router.push('/jobs/jobPosting'); // Navigate to the specified page

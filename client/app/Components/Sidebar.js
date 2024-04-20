@@ -10,6 +10,7 @@ import {
     UsersIcon,
 } from "@heroicons/react/outline";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon, current: false },
@@ -31,7 +32,7 @@ function classNames(...classes) {
 }
 
 export default function Sidebar({ children }) {
-
+    const router = useRouter();
     const [current, setCurrent] = useState(0);
     const pathname = usePathname();
     React.useEffect(() => {
@@ -46,6 +47,13 @@ export default function Sidebar({ children }) {
             setCurrent(3);
         }
     });
+    const handleSignOut = () => {
+        // Delete the "token" cookie
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+        
+        // Redirect to "/signup"
+        router.push('/signup');
+    };
 
     return (
         <>
@@ -241,6 +249,7 @@ export default function Sidebar({ children }) {
                                                 {({ active }) => (
                                                     <a
                                                         href={item.href}
+                                                        onClick={item.name === "Sign out" ? handleSignOut : null}
                                                         className={classNames(
                                                             active ? "bg-gray-100" : "",
                                                             "block px-4 py-2 text-sm text-gray-700"
