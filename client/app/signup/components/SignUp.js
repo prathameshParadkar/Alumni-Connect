@@ -99,15 +99,15 @@ const SignUp = () => {
 
                                 <div className="mt-1 ">
                                     <div>
-                                        <a
-                                            href="#"
+                                        <button
+                                            
                                             onClick={handleLinkedInSignIn}
                                             className="w-full inline-flex justify-center py-4 px-6 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                                         >
                                             <span className="sr-only">Sign in with LinkedIn</span>
                                             <img className=" h-5" src='/assets/linkedin.png' />
 
-                                        </a>
+                                        </button>
                                     </div>
 
                                     <div className="space-y-1">

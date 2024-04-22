@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
     BellIcon,
@@ -11,6 +11,8 @@ import {
 } from "@heroicons/react/outline";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
+import jwt from "jsonwebtoken"; // Use a library like jwt-decode to decode JWT tokens
+
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon, current: false },
@@ -32,9 +34,12 @@ function classNames(...classes) {
 }
 
 export default function Sidebar({ children }) {
+    const url = "http://localhost:5000";
     const router = useRouter();
+    const [user,setUser] = useState(null);
     const [current, setCurrent] = useState(0);
     const pathname = usePathname();
+    const [dataFetched, setDataFetched] = useState(false);
     React.useEffect(() => {
         console.log("useEffect runed");
         if (pathname.includes("dashboard")) {
@@ -47,6 +52,71 @@ export default function Sidebar({ children }) {
             setCurrent(3);
         }
     });
+    useEffect(() => {
+        const getTokenFromCookie = () => {
+          const cookies = document.cookie.split("; ");
+          const cookie = cookies.find((c) => c.startsWith("token="));
+          if (cookie) {
+            const token = cookie.split("=")[1];
+            return token;
+          }
+          return null;
+        };
+    
+        const decodeToken = (token) => {
+          if (token) {
+            try {
+              const decoded = jwt.decode(token);
+              //console.log('Decoded token:', decoded);
+              setUser(decoded);
+            } catch (error) {
+              console.error("Error decoding token:", error.message);
+            }
+          }
+        };
+    
+        const token = getTokenFromCookie();
+        decodeToken(token);
+    }, []);
+    //console.log(user);
+    const fetchUserName = async () => {
+        try {
+            console.log("in")
+            let apiEndpoint = '';
+            if (user.userType === 'alumni') {
+                apiEndpoint = 'http://localhost:5000/api/alumniById';
+            } else if (user.userType === 'student') {
+                apiEndpoint = 'http://localhost:5000/api/studentById';
+            }
+            
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: user.userId })
+            });
+    
+            const userData = await response.json();
+            console.log(userData)
+            if (userData.name) {
+                // Set the user's name in state or wherever you want to use it
+                setUser({ ...user, name: userData.name });
+            }
+        } catch (error) {
+            console.error('Error fetching user name:', error);
+        }
+    };
+    
+    useEffect(() => {
+        // Fetch user's name when the component mounts
+        if (user && user.userId && user.userType && !dataFetched) {
+            fetchUserName();
+            setDataFetched(true);
+        }
+    }, [user, dataFetched]);
+    //console.log(user)
+        
     const handleSignOut = () => {
         // Delete the "token" cookie
         document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
@@ -213,6 +283,8 @@ export default function Sidebar({ children }) {
                                     </div>
                                 </form> */}
                             </div>
+                            {user && user.name && (
+
                             <div className="ml-4 flex items-center md:ml-6">
                                 <button
                                     type="button"
@@ -227,11 +299,14 @@ export default function Sidebar({ children }) {
                                     <div>
                                         <Menu.Button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                             <span className="sr-only">Open user menu</span>
-                                            <img
+                                            <div class="relative flex w-10 h-10 overflow-hidden bg-gray-100 rounded-full white items-center justify-center border-2 border-gray-400">
+                                                <h3 className="text-xl text-gray-500 font-semibold">{user.name[0]}</h3>
+                                            </div>
+                                            {/*<img
                                                 className="h-8 w-8 rounded-full"
                                                 src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                                                 alt=""
-                                            />
+                                            />*/}
                                         </Menu.Button>
                                     </div>
                                     {/* <Transition
@@ -264,6 +339,7 @@ export default function Sidebar({ children }) {
                                     {/* </Transition> */}
                                 </Menu>
                             </div>
+                            )}
                         </div>
                     </div>
 

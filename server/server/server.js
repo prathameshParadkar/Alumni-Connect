@@ -56,7 +56,7 @@ passport.use(
     {
       clientID: process.env.LINKEDIN_CLIENT_ID,
       clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-      callbackURL: 'https://2d0f-2409-4040-e06-2c3a-8437-a7cf-cdac-dad9.ngrok-free.app/auth/linkedin/callback',
+      callbackURL: 'http://localhost:5000/api/auth/linkedin/callback',
       scope: ['openid', 'profile', 'email'],
       state: true,
     },
