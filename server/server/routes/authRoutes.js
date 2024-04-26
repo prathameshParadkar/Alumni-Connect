@@ -58,6 +58,41 @@ router.post('/register/alumni', async (req, res) => {
     }
 });
 
+router.post('/register/linkedin', async (req, res) => {
+    try {
+        const { name, email, type, collegeId } = req.body;
+        
+    if (type === 'student') {
+        const user = await Student.create({ name, email, collegeId });
+        const payload = {
+            userId: user._id,
+            userType: userType,
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }); // Adjust expiration as needed
+        res.cookie('token', token, { 
+            sameSite: 'lax',
+            secure: true, 
+        });
+        res.status(201).json(user);
+    } else if (type === 'alumni') {
+        const user = await Alumni.create({ name, email, collegeId });
+        const payload = {
+            userId: user._id,
+            userType: userType,
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }); // Adjust expiration as needed
+        res.cookie('token', token, { 
+            sameSite: 'lax',
+            secure: true, 
+        });
+        res.status(201).json(user);
+    } 
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;

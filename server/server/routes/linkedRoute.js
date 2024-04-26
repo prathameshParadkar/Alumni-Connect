@@ -38,8 +38,13 @@ router.get("/auth/linkedin/callback", async (req, res) => {
     });
 
     const user_info = responseUserInfo.data;
-    console.log("user_info-->", user_info);
-    return res.json(user_info);
+
+    // Set user info in a cookie
+    res.cookie('userInfo', JSON.stringify(user_info), {
+    });
+
+    // Redirect to the frontend route with user data attached in session
+    res.redirect('http://localhost:3000/signup');
   } catch (error) {
     // Handle errors gracefully
     console.error("Error:", error.message);

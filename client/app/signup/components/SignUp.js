@@ -1,4 +1,5 @@
 "use client";
+import axios from 'axios';
 import { useRouter } from 'next/navigation'
 import React, { useState, useEffect } from 'react'
 
@@ -8,6 +9,8 @@ const SignUp = () => {
     const [password, setPassword] = useState(""); 
     const [colleges, setColleges] = useState([]);
     const [collegeName, setCollegeName] = useState("");
+    const [userType, setUserType] = useState("");
+    const [userInfo, setUserInfo] = useState(null);
     useEffect(() => {
         const fetchColleges = async () => {
           try {
@@ -56,22 +59,83 @@ const SignUp = () => {
           console.error("Registration error:", error.message);
         }
       };
-      const handleLinkedInSignIn = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/auth/linkedin', {
-                method: 'GET'
-            });
-    
-            if (response.ok) {
-                console.log('LinkedIn sign-in successful');
-                // Handle any further actions if needed
-            } else {
-                console.error('LinkedIn sign-in failed');
-            }
-        } catch (error) {
-            console.error('Error signing in with LinkedIn:', error.message);
+      useEffect(() => {
+
+      function parseUserInfoFromCookie(cookieName) {
+        let cookieString = decodeURIComponent(document.cookie);
+        let cookiePairs = cookieString.split('; ');
+        let userInfoRaw = cookiePairs.find(row => row.startsWith(`${cookieName}=`));
+        
+        if (userInfoRaw) {
+          let userInfo = JSON.parse(userInfoRaw.split('=')[1]);
+          return userInfo;
         }
-    };
+        return null;
+      }
+
+      setUserInfo(parseUserInfoFromCookie('userInfo'));
+    }, []);
+      console.log(userInfo);
+   
+      useEffect(() => {
+        if (userInfo) {
+            // Handle user info from LinkedIn
+            // Example: registerUser(userType, userData);
+            console.log(userInfo);
+            axios.post('http://localhost:5000/api/auth/register/linkedin', {...userInfo, type: userType, collegeId: collegeName})
+            .then((response) => {
+                console.log(response);
+                router.push('/dashboard');
+            })
+            .catch((error) => {
+                console.error('LinkedIn registration error:', error.message);
+            });
+            
+        }
+        }, [userInfo]);
+      async function registerUser(userType, userData) {
+        const url = `http://localhost:5000/api/auth/register/${userType}`;
+      
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+          });
+      
+          if (response.ok) {
+            const data = await response.json();
+            console.log('Registration successful:', data);
+            // Redirect or further action
+          } else {
+            console.error('Registration failed');
+          }
+        } catch (error) {
+          console.error('Error during registration:', error.message);
+        }
+      }
+      
+      // Example usage, assuming userType is 'student' or 'alumni' based on selection
+      //registerUser(userType, userData);
+      
+        const handleLinkedInSignIn = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/linkedin', {
+                    method: 'GET'
+                });
+        
+                if (response.ok) {
+                    console.log('LinkedIn sign-in successful');
+                    // Handle any further actions if needed
+                } else {
+                    console.error('LinkedIn sign-in failed');
+                }
+            } catch (error) {
+                console.error('Error signing in with LinkedIn:', error.message);
+            }
+        };
 
     return (
         <div className="min-h-screen flex">
@@ -99,15 +163,15 @@ const SignUp = () => {
 
                                 <div className="mt-1 ">
                                     <div>
-                                        <button
-                                            
-                                            onClick={handleLinkedInSignIn}
+                                        <a
+                                            href='http://localhost:5000/api/auth/linkedin'
+                                            //onClick={handleLinkedInSignIn}
                                             className="w-full inline-flex justify-center py-4 px-6 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                                         >
                                             <span className="sr-only">Sign in with LinkedIn</span>
                                             <img className=" h-5" src='/assets/linkedin.png' />
 
-                                        </button>
+                                        </a>
                                     </div>
 
                                     <div className="space-y-1">
@@ -139,7 +203,28 @@ const SignUp = () => {
                 </div>
                                 </div>
                             </div>
-
+                            <div className="space-y-1">
+                  <div className="mt-1">
+                    <select
+                      id="userType"
+                      name="userType"
+                      required
+                      value={userType}
+                      onChange={(e) => setUserType(e.target.value)}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
+                    >
+                      <option value="" className="px-3 py-2">
+                        Select a user type
+                      </option>
+                      <option value="student" className="px-3 py-2">
+                        Student
+                      </option>
+                      <option value="alumni" className="px-3 py-2">
+                        Alumni
+                      </option>
+                    </select>
+                  </div>
+                </div>
                             <div className="mt-6 relative">
                                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
                                     <div className="w-full border-t border-gray-300" />
