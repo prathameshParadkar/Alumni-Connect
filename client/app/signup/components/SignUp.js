@@ -11,6 +11,8 @@ const SignUp = () => {
     const [collegeId, setCollegeId] = useState("");
     const [userType, setUserType] = useState("");
     const [userInfo, setUserInfo] = useState(null);
+
+    console.log(userType, collegeId);
     useEffect(() => {
         const fetchColleges = async () => {
           try {
@@ -76,21 +78,47 @@ const SignUp = () => {
       setUserInfo(parseUserInfoFromCookie('userInfo'));
     }, []);
       //console.log(userInfo);
-   
+      const M2 = async () => {
+        try{
+
+          console.log("From useEffect", userInfo, userType, collegeId);
+          const obj = {
+            ...userInfo,
+            userType: 'alumni',
+            collegeId: '661c16cefeac1836d06b10e1'
+          }
+          console.log(obj, "obj here")
+          const response = await fetch("http://localhost:5000/api/auth/register/linkedin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(obj),
+        credentials: "include"
+      });
+
+      if (response.ok) {
+        // Registration successful, handle redirection or display success message
+        console.log(response);
+        alert("Registration successful");
+        router.push('/dashboard');
+      } else {
+        alert("Registration failed");
+        console.error("Registration failed");
+      }
+      } catch (error) {
+        console.error("Registration error:", error.message);
+      }
+      }
+
+    
       useEffect(() => {
         if (userInfo) {
             // Handle user info from LinkedIn
             // Example: registerUser(userType, userData);
-            console.log("From useEffect", userInfo);
-            axios.post('http://localhost:5000/api/auth/register/linkedin', {...userInfo, type: userType, collegeId: collegeId})
-              .then((response) => {
-                console.log("LinkedIn response: ", response);
-                document.cookie = 'cookieName=userInfo; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                router.push('/dashboard');
-              })
-              .catch((error) => {
-                console.error('LinkedIn registration error:', error.message);
-              });
+             M2();
+            
+
             
         }
         }, [userInfo]);
