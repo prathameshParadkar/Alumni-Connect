@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { useParams } from "react-router-dom";
 import { CopyIcon, CheckIcon, WarningIcon, CloseIcon } from "@chakra-ui/icons";
 import {
@@ -16,6 +16,7 @@ import {
     useDisclosure,
 } from "@chakra-ui/react";
 import RightDrawer from "./RightDrawer";
+import axios from "axios";
 
 const status = {
     warn: {
@@ -54,13 +55,17 @@ const timeline = [
     },
 ];
 
-const DonationDetails = ({ fundraiser }) => {
+const DonationDetails = ({ fundraiser, alumniName, collegeName, donations }) => {
     // const [data, setData] = useState([]);
-    const [donations, setDonations] = useState([]);
+    // const [donations, setDonations] = useState([]);
     const { isOpen, onOpen, onClose } = useDisclosure();
-
+    // const [alumniName, setAlumniName] = useState("");
+    // const [collegeName, setCollegeName] = useState("");
     // const { complaint_id } = useParams();
 
+
+
+    // console.log("Donations", donations)
     return (
         <Box p={8}>
             <div className="flex justify-between items-center">
@@ -72,15 +77,15 @@ const DonationDetails = ({ fundraiser }) => {
                 </div>
 
                 <Button onClick={onOpen} colorScheme="green">
-                    Add Remark
+                    Donate❤️
                 </Button>
             </div>
             <Box className="flex flex-row-reverse">
                 <div className="w-[70%] h-full">
                     <div className="flow-root max-h-screen overflow-y-scroll remove-scrollbar">
                         <ul role="list" className="mb-4 mx-10 mt-4">
-                            {donations.map((event, eventIdx) => (
-                                <li key={event.id}>
+                            {donations.length > 0 && donations.map((event, eventIdx) => (
+                                <li key={event.donationId} className="shadow-lg p-4 rounded-lg bg-white">
                                     <div className="relative pb-8">
                                         {eventIdx !== donations.length - 1 ? (
                                             <span
@@ -91,20 +96,27 @@ const DonationDetails = ({ fundraiser }) => {
                                         <div className="relative flex space-x-3">
                                             <div className="text-white">
                                                 <span
-                                                    className={`${status[`${event.status_type}`].iconBackground
+                                                    className={`${status[`success`].iconBackground
                                                         } h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white`}
                                                 >
-                                                    {status[`${event.status_type}`].icon}
+                                                    {status[`success`].icon}
                                                 </span>
                                             </div>
-                                            <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                                <div>
-                                                    <p className="text-sm text-gray-500">
-                                                        {event.status}{" "}
+                                            <div className="min-w-0 flex-1 items-center pt-1.5 flex justify-between space-x-4">
+                                                <div className="flex flex-col space-y-5">
+                                                    <p className="text-lg ml-2 text-gray-500">
+                                                        {/* {event.status}{" "} */}
+                                                        {event.userName} donated
+                                                        <span className="ml-2 text-green-400">
+                                                            ₹{event.amount}
+                                                        </span>
+                                                    </p>
+                                                    <p className="text-md ml-2 text-gray-500">
+                                                        {event.message}
                                                     </p>
                                                 </div>
                                                 <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                                                    <time dateTime={event.datetime}>{event.date}</time>
+                                                    <time dateTime={event.datetime}>{new Date(event.date).toDateString()}</time>
                                                 </div>
                                             </div>
                                         </div>
@@ -122,14 +134,14 @@ const DonationDetails = ({ fundraiser }) => {
                                     <dt className="text-md font-medium text-[#0262AF]">
                                         Created By
                                     </dt>
-                                    <dd className="mt-1 text-md text-gray-900">{fundraiser?.createdBy}</dd>
+                                    <dd className="mt-1 text-md text-gray-900">{alumniName}</dd>
                                 </div>
                                 <div className="sm:col-span-1">
                                     <dt className="text-md font-medium text-[#0262AF]">
                                         College
                                     </dt>
                                     <dd className="mt-1 text-md text-gray-900">
-                                        {fundraiser?.collegeId}
+                                        {collegeName}
                                     </dd>
                                 </div>
                                 {/* <div className="sm:col-span-1">
@@ -151,10 +163,14 @@ const DonationDetails = ({ fundraiser }) => {
                                 </div>
                                 <div className="sm:col-span-2">
                                     <dt className="text-md font-medium text-[#0262AF]">
-                                        Document
+                                        Fundraiser Progress
                                     </dt>
-                                    <dd className="mt-1 text-md text-gray-900">
-                                        <ul
+                                    <dd className="mt-1 text-md text-gray-900 flex space-x-5 items-center">
+                                        <span>{`${(fundraiser.currentAmount / fundraiser.targetAmount) * 100}%`}</span>
+                                        <div className="flex w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${(fundraiser.currentAmount / fundraiser.targetAmount) * 100}%` }}> </div>
+                                        </div>
+                                        {/* <ul
                                             role="list"
                                             className="border border-gray-200 rounded-md divide-y divide-gray-200"
                                         >
@@ -177,7 +193,7 @@ const DonationDetails = ({ fundraiser }) => {
                                                     </a>
                                                 </div>
                                             </li>
-                                        </ul>
+                                        </ul> */}
                                     </dd>
                                 </div>
                             </dl>

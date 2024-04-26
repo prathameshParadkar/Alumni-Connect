@@ -102,9 +102,10 @@ router.get('/:id', getFundraiserById);
 
 const donate = async (req, res,) => {
     try {
-        const { amount, userId, userName, userEmail, message } = req.body;
+        let { amount, userId, userName, userEmail, message } = req.body;
         const fundraiserId = req.params.id;
         console.log("Donating", fundraiserId)
+        amount = parseInt(amount);
         if (!amount || !userId || !userName || !userEmail || !message || !fundraiserId) {
             return res.status(400).json({ message: 'Please enter all fields' });
         }

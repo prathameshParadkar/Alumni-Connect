@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Student = require('../models/student'); 
-const Alumni = require('../models/alumni'); 
+const Student = require('../models/student');
+const Alumni = require('../models/alumni');
 // Route to fetch names of all colleges
 router.get('/students', async (req, res) => {
     try {
@@ -49,6 +49,45 @@ router.post('/alumniById', async (req, res) => {
         res.json(alumni);
     } catch (error) {
         console.error('Error fetching alumni:', error.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.post('/fetchById', async (req, res) => {
+    try {
+        const { id } = req.body; // Get the ID from the request body
+        let userData = {};
+
+        // Check in the student table
+        const student = await Student.findById(id, 'name email');
+        if (student) {
+            userData = { ...student._doc, userType: 'Student' };
+        }
+
+        // If not found in student table, check in the alumni table
+        if (!userData._id) {
+            const alumni = await Alumni.findById(id, 'name email');
+            if (alumni) {
+                userData = { ...alumni._doc, userType: 'Alumni' };
+            }
+        }
+
+        // If not found in alumni table, check in the college table
+        if (!userData._id) {
+            const college = await College.findById(id, 'name email');
+            if (college) {
+                userData = { ...college._doc, userType: 'College' };
+            }
+        }
+
+        // If no user found with the given ID in any table, return 404
+        if (!userData._id) {
+            return res.status(404).send('User not found');
+        }
+
+        res.json(userData);
+    } catch (error) {
+        console.error('Error fetching user data:', error.message);
         res.status(500).send('Server Error');
     }
 });
