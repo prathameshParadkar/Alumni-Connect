@@ -10,6 +10,9 @@ import { getfundraisersById } from '@/api';
 
 const page = () => {
     const [fundraiser, setFundraiser] = useState({});
+    const [alumniName, setAlumniName] = useState('');
+    const [collegeName, setCollegeName] = useState('');
+    const [donations, setDonations] = useState([]);
 
     // get params from the url
     const { id } = useParams();
@@ -19,6 +22,28 @@ const page = () => {
             .then((res) => {
                 console.log(res.data.data);
                 setFundraiser(res.data.data);
+                setDonations(res.data.data.donations);
+
+                axios.post(`http://localhost:5000/api/alumniById`, { id: res.data.data.createdBy })
+                    .then((res) => {
+                        console.log(res.data);
+                        setAlumniName(res.data.name);
+                    }
+                    )
+                    .catch((err) => {
+                        console.log(err);
+                    })
+
+                axios.post('http://localhost:5000/api/collegeById', { id: res.data.data.collegeId })
+                    .then((res) => {
+                        console.log(res.data);
+                        setCollegeName(res.data.name);
+                    }
+                    )
+                    .catch((err) => {
+                        console.log(err);
+                    }
+                    )
             })
             .catch((err) => {
                 console.log(err);
@@ -33,7 +58,7 @@ const page = () => {
             </div> */}
             {/*<List />*/}
             {/* {user && user.userType === 'alumni' && ( */}
-            <DonationDetails fundraiser={fundraiser} />
+            <DonationDetails donations={donations} fundraiser={fundraiser} alumniName={alumniName} collegeName={collegeName} />
             {/* )} */}
         </div>
     )

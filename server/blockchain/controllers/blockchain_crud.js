@@ -297,12 +297,15 @@ const getDonationByFundraiseId = async (req, res) => {
       fundraiseId
     );
     console.log(tx)
-    // console.log(tx[1][1].toNumber())
-    // const receipt = await tx.wait();
-    // console.log(receipt)
-    // const txHash = receipt.transactionHash;
+    if (tx.length === 0) {
+      res.status(200).json({ success: true, data: tx });
+      return null;
+    }
+
     let resultArray = [];
     const dataArray = tx;
+
+
 
     console.log(dataArray[0][0], dataArray[0][1], dataArray[0][2], dataArray[0][3].toNumber(), dataArray[0][4], dataArray[0][5], dataArray[0][6])
     for (let i = 0; i < dataArray.length; i++) {
