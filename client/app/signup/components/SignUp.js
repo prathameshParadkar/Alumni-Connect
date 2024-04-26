@@ -8,7 +8,7 @@ const SignUp = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState(""); 
     const [colleges, setColleges] = useState([]);
-    const [collegeName, setCollegeName] = useState("");
+    const [collegeId, setCollegeId] = useState("");
     const [userType, setUserType] = useState("");
     const [userInfo, setUserInfo] = useState(null);
     useEffect(() => {
@@ -75,21 +75,22 @@ const SignUp = () => {
 
       setUserInfo(parseUserInfoFromCookie('userInfo'));
     }, []);
-      console.log(userInfo);
+      //console.log(userInfo);
    
       useEffect(() => {
         if (userInfo) {
             // Handle user info from LinkedIn
             // Example: registerUser(userType, userData);
-            console.log(userInfo);
-            axios.post('http://localhost:5000/api/auth/register/linkedin', {...userInfo, type: userType, collegeId: collegeName})
-            .then((response) => {
-                console.log(response);
+            console.log("From useEffect", userInfo);
+            axios.post('http://localhost:5000/api/auth/register/linkedin', {...userInfo, type: userType, collegeId: collegeId})
+              .then((response) => {
+                console.log("LinkedIn response: ", response);
+                document.cookie = 'cookieName=userInfo; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 router.push('/dashboard');
-            })
-            .catch((error) => {
+              })
+              .catch((error) => {
                 console.error('LinkedIn registration error:', error.message);
-            });
+              });
             
         }
         }, [userInfo]);
@@ -186,15 +187,15 @@ const SignUp = () => {
                       id="college"
                       name="college"
                       required
-                      value={collegeName}
-                      onChange={(e) => setCollegeName(e.target.value)}
+                      value={collegeId}
+                      onChange={(e) => setCollegeId(e.target.value)}
                       className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
                     >
                       <option value="" className="px-3 py-2">
                         Select a college
                       </option>
                       {colleges.map((college) => (
-                        <option key={college._id} value={college.name}>
+                        <option key={college._id} value={college._id}>
                           {college.name}
                         </option>
                       ))}
