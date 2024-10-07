@@ -9,6 +9,7 @@ const collegeRotues = require('./routes/collegeRoutes');
 const userRoutes = require('./routes/userRoutes');
 const linkedinRoutes = require('./routes/linkedRoute');
 const fundraiserRoutes = require('./routes/fundraiserRoutes');
+const alumniRoutes = require('./routes/alumniRoutes');
 const session = require('express-session');
 const passport = require('passport');
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
@@ -21,6 +22,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const allowedOrigins = ['http://localhost:3000'];
+
 
 // CORS middleware configuration
 const corsOptions = {
@@ -52,19 +54,19 @@ passport.deserializeUser((user, done) => {
 });
 
 passport.use(
-  new LinkedInStrategy(
-    {
-      clientID: process.env.LINKEDIN_CLIENT_ID,
-      clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-      callbackURL: 'http://localhost:5000/api/auth/linkedin/callback',
-      scope: ['openid', 'profile', 'email'],
-      state: true,
-    },
-    // print name and email
-    async (accessToken, refreshToken, profile, done) => {
-      done(null, user);
-    }
-  )
+    new LinkedInStrategy(
+        {
+            clientID: process.env.LINKEDIN_CLIENT_ID,
+            clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+            callbackURL: 'http://localhost:5000/api/auth/linkedin/callback',
+            scope: ['openid', 'profile', 'email'],
+            state: true,
+        },
+        // print name and email
+        async (accessToken, refreshToken, profile, done) => {
+            done(null, user);
+        }
+    )
 );
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -79,6 +81,7 @@ app.use('/api/fundraiser', fundraiserRoutes);
 app.use('/api', collegeRotues);
 app.use('/api', userRoutes);
 app.use('/api', linkedinRoutes);
+app.use('/api/alumni', alumniRoutes);
 // Start the server
 app.get('/', (req, res) => {
     console.log(req.body);

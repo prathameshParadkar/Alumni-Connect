@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const College = require('../models/college'); // Import the College model
+const Fundraiser = require('../models/fundraiser');
 
 // Route to fetch names of all colleges
 router.get('/colleges', async (req, res) => {
@@ -28,4 +29,14 @@ router.post('/collegeById', async (req, res) => {
     }
 });
 
+
+router.get('/college/fundraisers', async (req, res) => {
+    try {
+        const fundraisers = await Fundraiser.find({ status: 'pending' });
+        res.status(200).json({ success: true, data: fundraisers });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server Error');
+    }
+});
 module.exports = router;

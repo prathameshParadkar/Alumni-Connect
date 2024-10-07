@@ -5,6 +5,8 @@ const Fundraiser = require('../models/fundraiser');
 const axios = require('axios');
 const e = require('express');
 const { ObjectId } = require('mongodb');
+const Alumni = require('../models/alumni');
+const { sendEmail2Donar, sendEmail2Owner } = require('../Services/email');
 
 const url = 'http://localhost:8080/blockchain';
 
@@ -115,6 +117,9 @@ const donate = async (req, res,) => {
             return res.status(404).json({ message: 'Fundraiser not found' });
         }
 
+        const fundraiserOwnerId = fundraiser.createdBy;
+        const fundraiserOwner = await Alumni.findById(ObjectId(fundraiserOwnerId));
+
         console.log({ ...req.body, fundraiseId: `${fundraiserId}` })
         // const response = 'hey'
         const response = await axios.post(url + '/create', { ...req.body, fundraiseId: `${fundraiserId}` });
@@ -122,6 +127,20 @@ const donate = async (req, res,) => {
         console.log(response.data.data)
         // update currentAmount in fundraiser
         fundraiser.currentAmount += amount;
+
+        sendEmail2Donar(userEmail, {
+            amount,
+            title: fundraiser.title,
+            currentAmount: fundraiser.currentAmount
+        })
+
+        sendEmail2Owner(fundraiserOwner.email, {
+            amount,
+            title: fundraiser.title,
+            currentAmount: fundraiser.currentAmount
+        })
+
+
         await fundraiser.save();
         res.status(201).json({ success: true, data: response.data.data });
     } catch (error) {
@@ -131,5 +150,25 @@ const donate = async (req, res,) => {
 }
 
 router.post('/:id/donate', donate);
+
+const approve = async (req, res) => {
+    console.log("Approving fundraiser", req.params.id)
+    try {
+        const fundraiserId = req.params.id;
+        const fundraiser = await Fundraiser.findById(ObjectId(fundraiserId));
+        if (!fundraiser) {
+            return res.status(404).json({ message: 'Fundraiser not found' });
+        }
+        fundraiser.status = 'active';
+        await fundraiser.save();
+        res.status(200).json({ success: true, data: fundraiser });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: error.message });
+    }
+}
+
+router.put('/:id/approve', approve);
+
 
 module.exports = router;

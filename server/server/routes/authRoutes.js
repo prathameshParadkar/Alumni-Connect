@@ -22,7 +22,7 @@ router.post('/register/college', async (req, res) => {
 router.post('/register/student', async (req, res) => {
     try {
         const { name, email, password, collegeName } = req.body;
-        
+
         // Find collegeId based on collegeName
         const college = await College.findOne({ name: collegeName });
         if (!college) {
@@ -61,25 +61,32 @@ router.post('/register/alumni', async (req, res) => {
 router.post('/register/linkedin', async (req, res) => {
     try {
         const { name, email, userType, collegeId } = req.body;
-        console.log(req.body);
+        console.log(req.body, "register linkedin body");
         let user;
-    if (userType === 'student') {
-        user = await Student.create({ name, email, collegeId });
-       
-    } else {
-        user = await Alumni.create({ name, email, collegeId });
-    } 
-    console.log("db user", user);
-    const payload = {
-        userId: user._id,
-        userType: userType,
-    };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }); // Adjust expiration as needed
-    res.cookie('token', token, { 
-        sameSite: 'lax',
-        secure: true, 
-    });
-    res.status(201).json(user);
+        if (userType === 'student') {
+            user = await Student.findOne({ email });
+            if (!user) {
+                user = await Student.create({ name, email, collegeId });
+            }
+
+        } else {
+            user = await Alumni.findOne({ email });
+            if (!user) {
+                user = await Alumni.create({ name, email, collegeId });
+            }
+        }
+        // user = await Alumni.findOne({ email });
+        console.log("db user", user);
+        const payload = {
+            userId: user._id,
+            userType: userType,
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }); // Adjust expiration as needed
+        res.cookie('token', token, {
+            sameSite: 'lax',
+            secure: true,
+        });
+        res.status(201).json(user);
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server Error');
@@ -87,6 +94,7 @@ router.post('/register/linkedin', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
+    console.log(req.body, "login body")
     try {
         const { email, password } = req.body;
         let user = await Student.findOne({ email });
@@ -111,9 +119,9 @@ router.post('/login', async (req, res) => {
             userType: userType,
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }); // Adjust expiration as needed
-        res.cookie('token', token, { 
+        res.cookie('token', token, {
             sameSite: 'lax',
-            secure: true, 
+            secure: true,
         });
         res.json({ token });
     } catch (error) {

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Tile from "./components/Tile";
 import { useRouter } from "next/navigation";
 import List from "./components/List";
@@ -7,14 +7,14 @@ const page = () => {
   const router = useRouter();
   useEffect(() => {
     const isTokenSetInCookie = () => {
-        const cookies = document.cookie.split("; ");
-        const tokenCookie = cookies.find(cookie => cookie.startsWith("token="));
-        return tokenCookie !== undefined;
+      const cookies = document.cookie.split("; ");
+      const tokenCookie = cookies.find(cookie => cookie.startsWith("token="));
+      return tokenCookie !== undefined;
     };
     if (!isTokenSetInCookie()) {
-        router.push("/signup");
+      router.push("/signup");
     }
-}, []);
+  }, []);
   const handleAddJobClick = () => {
     router.push("/events/eventPosting"); // Navigate to the specified page
   };

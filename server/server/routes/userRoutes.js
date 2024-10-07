@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Student = require('../models/student');
 const Alumni = require('../models/alumni');
+const College = require('../models/college');
 // Route to fetch names of all colleges
 router.get('/students', async (req, res) => {
     try {
@@ -14,16 +15,16 @@ router.get('/students', async (req, res) => {
     }
 });
 
-router.get('/alumni', async (req, res) => {
-    try {
-        // Fetch all colleges from the database
-        const alumni = await Alumni.find({}, 'name'); // Only select the 'name' field
-        res.json(alumni);
-    } catch (error) {
-        console.error('Error fetching colleges:', error.message);
-        res.status(500).send('Server Error');
-    }
-});
+// router.get('/alumni', async (req, res) => {
+//     try {
+//         // Fetch all colleges from the database
+//         const alumni = await Alumni.find({}, 'name'); // Only select the 'name' field
+//         res.json(alumni);
+//     } catch (error) {
+//         console.error('Error fetching colleges:', error.message);
+//         res.status(500).send('Server Error');
+//     }
+// });
 
 router.post('/studentById', async (req, res) => {
     try {
@@ -57,13 +58,14 @@ router.post('/fetchById', async (req, res) => {
     try {
         const { id } = req.body; // Get the ID from the request body
         let userData = {};
+        // console.log(id)
 
         // Check in the student table
         const student = await Student.findById(id, 'name email');
         if (student) {
             userData = { ...student._doc, userType: 'Student' };
         }
-
+        console.log(userData)
         // If not found in student table, check in the alumni table
         if (!userData._id) {
             const alumni = await Alumni.findById(id, 'name email');
@@ -82,12 +84,13 @@ router.post('/fetchById', async (req, res) => {
 
         // If no user found with the given ID in any table, return 404
         if (!userData._id) {
-            return res.status(404).send('User not found');
+            res.status(404).send('User not found');
+            return;
         }
 
         res.json(userData);
     } catch (error) {
-        console.error('Error fetching user data:', error.message);
+        console.log('Error fetching user data:', error);
         res.status(500).send('Server Error');
     }
 });
