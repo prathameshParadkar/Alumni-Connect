@@ -12,7 +12,9 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [collegeName, setCollegeName] = useState("");
   const [userType, setUserType] = useState("");
-
+  const [skill, setSkill] = useState("");
+  const [interests, setInterests] = useState("");
+  const [linkedin, setLinkedIn] = useState("");
   useEffect(() => {
     const fetchColleges = async () => {
       try {
@@ -32,35 +34,35 @@ const SignUp = () => {
   }, []);
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     if (userType === "") {
       console.error("Please select a user type");
       return;
     }
-  
+
     const formData = {
       name: name,
       email: email,
       password: password,
-      collegeName: collegeName
+      linkedin_url: linkedin,
+      collegeName: collegeName,
     };
-  
     let registerUrl;
     if (userType === "student") {
       registerUrl = `${url}/api/auth/register/student`;
     } else if (userType === "alumni") {
       registerUrl = `${url}/api/auth/register/alumni`;
     }
-  
+
     try {
       const response = await fetch(registerUrl, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
-  
+      console.log(response);
       if (response.ok) {
         // Registration successful, handle redirection or display success message
         alert("Registration successful");
@@ -98,67 +100,115 @@ const SignUp = () => {
           <div className="mt-8">
             <div className="mt-6">
               <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Name
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      autoComplete="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0054D0] focus:border-[#0054D0] sm:text-sm"
-                    />
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Name
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        autoComplete="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0054D0] focus:border-[#0054D0] sm:text-sm"
+                      />
+                    </div>
                   </div>
-                </div>
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Email address
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0054D0] focus:border-[#0054D0] sm:text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div space-y-1>
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Password
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autoComplete="current-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0054D0] focus:border-[#0054D0] sm:text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="userType"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Select User Type
+                    </label>
+                    <div className="mt-1">
+                      <select
+                        id="userType"
+                        name="userType"
+                        required
+                        value={userType}
+                        onChange={(e) => setUserType(e.target.value)}
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
+                      >
+                        <option value="" className="px-3 py-2">
+                          Select a user type
+                        </option>
+                        <option value="student" className="px-3 py-2">
+                          Student
+                        </option>
+                        <option value="alumni" className="px-3 py-2">
+                          Alumni
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Email address
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0054D0] focus:border-[#0054D0] sm:text-sm"
-                    />
+                    <label
+                      htmlFor="linkedin-url"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      LinkedIn Profile URL
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        id="linkedin-url"
+                        name="linkedin-url"
+                        type="linkedin-url"
+                        autoComplete="linkedin-url"
+                        value={linkedin}
+                        onChange={(e) => setLinkedIn(e.target.value)}
+                        required
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0054D0] focus:border-[#0054D0] sm:text-sm"
+                      />
+                    </div>
                   </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Password
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      autoComplete="current-password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0054D0] focus:border-[#0054D0] sm:text-sm"
-                    />
-                  </div>
-                </div>
                 <div className="space-y-1">
                   <label
                     htmlFor="college"
@@ -183,34 +233,6 @@ const SignUp = () => {
                           {college.name}
                         </option>
                       ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <label
-                    htmlFor="userType"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Select Student or Alumni
-                  </label>
-                  <div className="mt-1">
-                    <select
-                      id="userType"
-                      name="userType"
-                      required
-                      value={userType}
-                      onChange={(e) => setUserType(e.target.value)}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
-                    >
-                      <option value="" className="px-3 py-2">
-                        Select a user type
-                      </option>
-                      <option value="student" className="px-3 py-2">
-                        Student
-                      </option>
-                      <option value="alumni" className="px-3 py-2">
-                        Alumni
-                      </option>
                     </select>
                   </div>
                 </div>
