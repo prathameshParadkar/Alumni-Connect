@@ -6,7 +6,7 @@ export async function POST(req) {
   const options = {
     mode: 'text',
     pythonOptions: ['-u'],
-    scriptPath: process.env.PYTHON_FILE_PATH,
+    scriptPath: process.env.PYTHON_FILE_PATH || 'C:/Users/Prathamesh/Desktop/hack/Major-Project/alumni-connect/client/app/api/',
     args: [data.flag, data.work_exp || "", data.education || "", data.skills || "", data.search_input || ""]
   };
 

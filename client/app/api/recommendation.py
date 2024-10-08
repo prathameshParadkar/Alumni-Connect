@@ -81,7 +81,7 @@ def extract_with_regex(text):
 
 def recommend_alumni(work_exp, education, skills):
 
-    df = pd.read_csv('D:/SPIT SEM 6/Major Project/project/Alumni-Connect/client/app/api/data.csv')
+    df = pd.read_csv('C:/Users/Prathamesh/Desktop/hack/Major-Project/alumni-connect/client/app/api/data.csv')
 
     df['combined_feature'] = df['work_titles'] + ' ' + df['current_education'] + ' ' + df['skills']
     vectorizer = TfidfVectorizer()

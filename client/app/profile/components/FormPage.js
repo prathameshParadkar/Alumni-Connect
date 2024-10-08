@@ -137,12 +137,12 @@ const FormPage = () => {
             </Box> */}
 
             {/* Career Interests Section */}
-            <h2 className="text-xl font-semibold mb-2">Career Interests</h2>
+            <h2 className="text-xl font-semibold mb-2">Work Experience</h2>
             <Select
                 isMulti
                 options={work_titles.map(title => ({ value: title, label: title }))}
                 onChange={(selectedOptions) => handleSelectChange(selectedOptions, setSelectedInterests)}
-                placeholder="Search and select career interests"
+                placeholder="Search and select work experience"
                 className="mb-4"
             />
             {/* <Box className="mb-4">
