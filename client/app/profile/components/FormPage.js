@@ -1,8 +1,11 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Avatar, Button, Input, Tag, TagLabel, TagCloseButton, Box } from '@chakra-ui/react';
 import Select from 'react-select';
+import Cookies from 'js-cookie'; // Import js-cookie
+import jwtDecode from 'jwt-decode'; // Import jwt-decode
 import DatePicker from 'react-datepicker';
+import jwt from "jsonwebtoken";
 
 const skills_list = [
     "Python", "JavaScript", "C++", "SQL", "React", "Node.js", "HTML", "CSS", "Docker", "Kubernetes",
@@ -75,7 +78,36 @@ const FormPage = () => {
     const [educations, setEducations] = useState([{ name: '', level: '', startYear: '', endYear: '' }]);
     const [selectedSkills, setSelectedSkills] = useState([]);
     const [selectedInterests, setSelectedInterests] = useState([]);
+    const [user, setUser] = useState(null);
 
+    useEffect(() => {
+        const getTokenFromCookie = () => {
+            const cookies = document.cookie.split("; ");
+            const cookie = cookies.find((c) => c.startsWith("token="));
+            if (cookie) {
+                const token = cookie.split("=")[1];
+                return token;
+            }
+            return null;
+        };
+
+        const decodeToken = (token) => {
+            if (token) {
+                try {
+                    const decoded = jwt.decode(token);
+                    //console.log('Decoded token:', decoded);
+                    setUser(decoded);
+                } catch (error) {
+                    console.error("Error decoding token:", error.message);
+                }
+            }
+        };
+
+        const token = getTokenFromCookie();
+        decodeToken(token);
+    }, []);
+
+    console.log("From profile page",user);
     const addEducation = () => {
         setEducations([...educations, { name: '', level: '', startYear: '', endYear: '' }]);
     };
@@ -98,6 +130,39 @@ const FormPage = () => {
 
     const removeSelectedOption = (value, setter, selectedOptions) => {
         setter(selectedOptions.filter(option => option.value !== value));
+    };
+
+    const handleSubmit = async () => {
+        const educationArray = educations.map(edu => edu.level); // Create an array of education levels
+        const data = {
+            id: user.userId, // You might want to update this to get the name from a user input field
+            work_experience: selectedInterests.map(interest => interest.value), // Map to get an array of strings
+            skills: selectedSkills.map(skill => skill.value), // Map to get an array of strings
+            education: educationArray // The education array
+        };
+
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const responseData = await response.json();
+            console.log('Response from API:', responseData);
+            alert("Sucessfully updated your profile")
+            window.location.reload();
+            // Handle the response as needed
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert("Error updating your profile")
+        }
     };
 
     console.log(educations, selectedInterests, selectedSkills)
@@ -154,7 +219,7 @@ const FormPage = () => {
                 ))}
             </Box> */}
 
-            <Button colorScheme="blue">Submit</Button>
+            <Button colorScheme="blue" onClick={handleSubmit}>Submit</Button>
         </div>
     );
 };

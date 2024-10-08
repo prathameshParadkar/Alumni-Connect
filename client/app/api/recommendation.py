@@ -5,6 +5,7 @@ import re
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import joblib
 import pickle
 # Set up the API key
 genai.configure(api_key="AIzaSyDocp4FqzjDiLowLliENrJkXx_BIJbaMRw")
@@ -81,12 +82,14 @@ def extract_with_regex(text):
 
 def recommend_alumni(work_exp, education, skills):
 
-    df = pd.read_csv('C:/Users/Prathamesh/Desktop/hack/Major-Project/alumni-connect/client/app/api/data.csv')
-
-    df['combined_feature'] = df['work_titles'] + ' ' + df['current_education'] + ' ' + df['skills']
-    vectorizer = TfidfVectorizer()
-    feature_vector = vectorizer.fit_transform(df['combined_feature'])
-
+    df = pd.read_csv('D:/SPIT SEM 6/Major Project/project/Alumni-Connect/client/app/api/data.csv')
+    #C:/Users/Prathamesh/Desktop/hack/Major-Project/alumni-connect/client/app/api/data.csv
+    #D:/SPIT SEM 6/Major Project/project/Alumni-Connect/client/app/api/data.csv
+    # df['combined_feature'] = df['work_titles'] + ' ' + df['current_education'] + ' ' + df['skills']
+    # vectorizer = TfidfVectorizer()
+    # feature_vector = vectorizer.fit_transform(df['combined_feature'])
+    vectorizer = joblib.load('D:/SPIT SEM 6/Major Project/project/Alumni-Connect/client/app/api/tfidf_vectorizer.joblib')
+    feature_vector = joblib.load('D:/SPIT SEM 6/Major Project/project/Alumni-Connect/client/app/api/feature_vector.joblib')
     student_input = ' '.join([work_exp, education, skills])
     student_fv = vectorizer.transform([student_input])
 
@@ -100,7 +103,14 @@ def recommend_alumni(work_exp, education, skills):
         alumni_name = df.iloc[idx]['name']
         if alumni_name not in seen_alumni:
             seen_alumni.add(alumni_name)
-            recommended_alumni.append(alumni_name)
+            alumni_info = {
+                "Name": alumni_name,
+                "Linkedin": df.iloc[idx]['linkedin_url'],
+                "Work Title": df.iloc[idx]['work_titles'],
+                "Education": df.iloc[idx]['current_education'],
+                "Skills": df.iloc[idx]['skills']
+            }
+            recommended_alumni.append(alumni_info)
         if len(recommended_alumni) == 5:
             break
     return recommended_alumni
@@ -119,10 +129,10 @@ if __name__ == "__main__":
             work_exp = regex_result['work_exp']
             education = regex_result['education']
             skills = regex_result['skills']
-            print(recommend_alumni(work_exp, education, skills))
+            print(json.dumps(recommend_alumni(work_exp, education, skills)))
         else:
             print("Error extracting data from Gemini response")
     elif flag == '1':
-        print(recommend_alumni(work_exp, education, skills))
+        print(json.dumps(recommend_alumni(work_exp, education, skills)))
     else:
         print("Invalid flag")

@@ -14,6 +14,6 @@ export async function POST(req) {
     return message[0];
   });
 
-  const recommendation = recommendationString.split(',');
+  const recommendation = JSON.parse(recommendationString);
   return NextResponse.json(recommendation);
 }

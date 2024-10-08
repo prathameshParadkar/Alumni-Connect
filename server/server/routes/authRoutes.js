@@ -133,11 +133,11 @@ router.post('/login', async (req, res) => {
 // Update Alumni and Student Route
 router.put('/update', async (req, res) => {
     try {
-        const { name, work_experience, skills, education } = req.body;
-        let user = await Student.findOne({ name });
+        const { id, work_experience, skills, education } = req.body;
+        let user = await Student.findById(id);
         let userType = 'student';
         if (!user) {
-            user = await Alumni.findOne({ name });
+            user = await Alumni.findById(id);
             userType = 'alumni';
         }
         if (!user) {
@@ -153,8 +153,8 @@ router.put('/update', async (req, res) => {
         }
 
         // Find the user by name and update the fields
-        const updatedUser = await userModel.findOneAndUpdate(
-            { name: name },  // Find user by name
+        const updatedUser = await userModel.findByIdAndUpdate(
+            { _id: id },  // Find user by name
             {
                 $set: {
                     work_experience: work_experience,

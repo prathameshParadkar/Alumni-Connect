@@ -95,4 +95,33 @@ router.post('/fetchById', async (req, res) => {
     }
 });
 
+
+router.post('/studentDetById', async (req, res) => {
+    try {
+        const { id } = req.body; // Get the ID from request body
+        const student = await Student.findById(id); // Fetch only the name field using the ID
+        if (!student) {
+            return res.status(404).send('Student not found');
+        }
+        res.json(student);
+    } catch (error) {
+        console.error('Error fetching student:', error.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.post('/alumniDetById', async (req, res) => {
+    try {
+        const { id } = req.body; // Get the ID from request body
+        const alumni = await Alumni.findById(id); // Fetch only the name field using the ID
+        if (!alumni) {
+            return res.status(404).send('Alumni not found');
+        }
+        res.json(alumni);
+    } catch (error) {
+        console.error('Error fetching alumni:', error.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

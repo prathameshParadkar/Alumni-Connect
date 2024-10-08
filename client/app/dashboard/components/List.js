@@ -5,6 +5,8 @@ import { CalendarIcon, LocationMarkerIcon, UsersIcon } from '@heroicons/react/so
 import { OfficeBuildingIcon, UserIcon } from '@heroicons/react/outline'
 import axios from 'axios';
 import { Avatar } from '@chakra-ui/react';
+import jwt from 'jsonwebtoken';
+// import { set } from 'react-datepicker/dist/date_utils';
 
 const List = () => {
     const url = 'http://localhost:5000';
@@ -18,6 +20,15 @@ const List = () => {
             .catch(error => console.error('Error fetching alumni', error));
     }
         , []);
+
+    // useEffect(() => {
+    //     axios.get(`${url}/api/alumni`)
+    //         .then(response => {
+    //             setAlumni(response.data);
+    //         })
+    //         .catch(error => console.error('Error fetching alumni', error));
+    // }
+    //     , []);
 
 
     return (
@@ -37,8 +48,8 @@ const List = () => {
             <div className="bg-white shadow overflow-hidden sm:rounded-md">
                 <ul role="list" className="divide-y divide-gray-200">
                     {alumni.map((alumnus) => (
-                        <li key={alumnus._id}>
-                            <a href="https://www.linkedin.com/in/mursaleen-batatawala-717104259/" className="block hover:bg-gray-50">
+                        <li>
+                            <a href="" target="_blank" className="block hover:bg-gray-50">
 
                                 <div className="px-4 py-4 sm:px-6 flex ">
                                     <div className='mr-4'>

@@ -5,19 +5,103 @@ import { CalendarIcon, LocationMarkerIcon, UsersIcon } from '@heroicons/react/so
 import { OfficeBuildingIcon, UserIcon } from '@heroicons/react/outline'
 import axios from 'axios';
 import { Avatar } from '@chakra-ui/react';
+import jwt from 'jsonwebtoken';
+
 
 const ProfileSearch = () => {
     const url = 'http://localhost:5000';
     const [alumni, setAlumni] = useState([]);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        axios.get(`${url}/api/alumni`)
-            .then(response => {
-                setAlumni(response.data);
-            })
-            .catch(error => console.error('Error fetching alumni', error));
-    }
-        , []);
+        const getTokenFromCookie = () => {
+            const cookies = document.cookie.split("; ");
+            const cookie = cookies.find((c) => c.startsWith("token="));
+            if (cookie) {
+                const token = cookie.split("=")[1];
+                return token;
+            }
+            return null;
+        };
+
+        const decodeToken = (token) => {
+            if (token) {
+                try {
+                    const decoded = jwt.decode(token);
+                    //console.log('Decoded token:', decoded);
+                    setUser(decoded);
+                } catch (error) {
+                    console.error("Error decoding token:", error.message);
+                }
+            }
+        };
+
+        const token = getTokenFromCookie();
+        decodeToken(token);
+    }, []);
+    console.log("From profile page", user);
+    
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!user || !user.userId) return; // Ensure user object and userId are defined
+    
+            try {
+                let apiEndpoint = '';
+                if (user.userType === 'alumni') {
+                    apiEndpoint = 'http://localhost:5000/api/alumniDetById';
+                } else if (user.userType === 'student') {
+                    apiEndpoint = 'http://localhost:5000/api/studentDetById';
+                }
+    
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: user.userId }) // Ensure userId exists
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+    
+                const userData = await response.json();
+                console.log("user data", userData);
+                const skillsString = userData.skills.join(', ');
+                const workExpString = userData.work_experience.join(', ');
+                const educationString = userData.education.join(', ');
+    
+                // Prepare POST request body
+                const requestBody = {
+                    flag: 1,
+                    work_exp: workExpString,
+                    education: educationString,
+                    skills: skillsString
+                };
+    
+                // Make POST request to the new API
+                const postResponse = await fetch('http://localhost:3000/api', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+    
+                if (!postResponse.ok) {
+                    throw new Error('Failed to post user data');
+                }
+    
+                const recommendation = await postResponse.json();
+                console.log("Recommendation result", recommendation);
+                setAlumni(recommendation);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+        fetchUserData();
+    }, [user]);
+    
 
 
     return (
@@ -42,19 +126,19 @@ const ProfileSearch = () => {
 
                                 <div className="px-4 py-4 sm:px-6 flex ">
                                     <div className='mr-4'>
-                                        <Avatar size="md" name={alumnus.name} src="https://bit.ly/broken-link" />
+                                        <Avatar size="md" name={alumnus.Name} src="https://bit.ly/broken-link" />
                                     </div>
                                     <div>
 
                                         <div className="flex items-center justify-between">
-                                            <p className="text-sm font-medium text-indigo-600 truncate">{alumnus.name}</p>
+                                            <p className="text-sm font-medium text-indigo-600 truncate">{alumnus.Name}</p>
 
                                         </div>
                                         <div className="mt-2 sm:flex sm:justify-between">
                                             <div className="sm:flex">
                                                 <p className="flex items-center text-sm text-gray-500">
                                                     <OfficeBuildingIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                                                    {alumnus.college}
+                                                    {alumnus.Education}
                                                 </p>
                                                 {/* <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
                                                     <LocationMarkerIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
