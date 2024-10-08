@@ -3,8 +3,11 @@ const mongoose = require('mongoose');
 const alumniSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true},
     email: { type: String, required: true },
-    password: { type: String,  },
-    linkedinId: { type: String },
+    password: { type: String},
+    linkedin: { type: String},
+    skills: {type: [String]},
+    work_experience: {type: [String]},
+    education: {type: [String]},
     collegeId: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true },
     image: { type: String },
     createdAt: { type: Date, default: Date.now },

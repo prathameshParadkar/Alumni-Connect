@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import Tile from "./components/Tile";
 import { useRouter } from "next/navigation";
+import {useEffect} from "react";
 import List from "./components/List";
 const page = () => {
   const router = useRouter();
