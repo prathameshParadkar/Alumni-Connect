@@ -81,20 +81,104 @@ const RightDrawer = ({ data: timeline, isOpen, onClose }) => {
 
     },);
 
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';  // Replace with the actual script URL
+        script.async = true;
+        document.body.appendChild(script);
+
+        // Clean up to remove the script when the component unmounts
+        
+    }, []);
+
     const donate = async () => {
+        
         setIsLoading(true);
         try {
-            const response = await axios.post(`http://localhost:5000/api/fundraiser/${id}/donate`, { amount, userId: user?.userId, userName, userEmail, message });
-            console.log(response.data);
-            onClose();
-            toast({
-                title: "Donation Successful",
-                description: "Thank you for your donation",
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-            });
-            setIsLoading(false);
+
+            // Create order by calling the server endpoint
+            // response = await fetch('/create-order', {
+            //   method: 'POST', 
+            //   headers: {
+            //     'Content-Type': 'application/json'
+            //   },
+            //   body: JSON.stringify({ amount , currency: 'INR', receipt: 'receipt#1', notes: {} })
+            // });
+            let response = await axios.post(`http://localhost:5000/api/payment/create-order`, { amount, currency: 'INR', receipt: 'receipt#1', notes: {} });
+            console.log("Arbra ka dabra",response.data);
+            
+            const order = await response.data;
+            
+            // Open Razorpay Checkout
+            const options = {
+              key: 'rzp_test_mxUTlp84gEbEo8', // Replace with your Razorpay key_id
+              amount: order.amount,
+              currency: order.currency,
+              name: 'AlumniConnect',
+              description: message,
+              order_id: order.id, // This is the order_id created in the backend
+              callback_url: window.location, // Your success URL
+              prefill: {
+                name: userName,
+                email: userEmail,
+                contact: '9999999999'
+              },
+              theme: {
+                color: '#F37254'
+              },
+               handler:  function (response) {
+                axios.post('http://localhost:5000/api/payment/verify-payment', {
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature
+                })
+                .then((res) => {
+                    const data = res.data;
+                    if (data.status === 'ok') {
+                        
+                        alert('Payment successful');
+                        response =  axios.post(`http://localhost:5000/api/fundraiser/${id}/donate`, { amount, userId: user?.userId, userName, userEmail, message });
+                        console.log(response.data);
+                        onClose();
+                        toast({
+                            title: "Donation Successful",
+                            description: "Thank you for your donation",
+                            status: "success",
+                            duration: 3000,
+                            isClosable: true,
+                        });
+                        //reload the page
+                        //wait for 5 seconds before reloading
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 5000);
+                        
+                    } else {
+                        alert('Payment verification failed');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Error verifying payment');
+                });
+            }
+            };
+      
+            const rzp = await new Razorpay(options);
+            console.log('Razorpay:', rzp);
+            
+            rzp.open();
+            // response = await axios.post(`http://localhost:5000/api/fundraiser/${id}/donate`, { amount, userId: user?.userId, userName, userEmail, message });
+            // console.log(response.data);
+            // onClose();
+            // toast({
+            //     title: "Donation Successful",
+            //     description: "Thank you for your donation",
+            //     status: "success",
+            //     duration: 3000,
+            //     isClosable: true,
+            // });
+            // setIsLoading(false);
 
         } catch (error) {
             console.error('Error donating:', error);

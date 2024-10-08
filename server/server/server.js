@@ -10,6 +10,7 @@ const userRoutes = require('./routes/userRoutes');
 const linkedinRoutes = require('./routes/linkedRoute');
 const fundraiserRoutes = require('./routes/fundraiserRoutes');
 const alumniRoutes = require('./routes/alumniRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 const session = require('express-session');
 const passport = require('passport');
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
@@ -24,6 +25,7 @@ const MONGO_URI = process.env.MONGO_URI;
 const allowedOrigins = ['http://localhost:3000'];
 
 
+
 // CORS middleware configuration
 const corsOptions = {
     origin: function (origin, callback) {
@@ -35,6 +37,8 @@ const corsOptions = {
     },
     credentials: true // Allow sending cookies
 };
+
+
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
@@ -82,11 +86,13 @@ app.use('/api', collegeRotues);
 app.use('/api', userRoutes);
 app.use('/api', linkedinRoutes);
 app.use('/api/alumni', alumniRoutes);
+app.use('/api/payment', paymentRoutes);
 // Start the server
 app.get('/', (req, res) => {
     console.log(req.body);
     res.send('Welcome to the server!');
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
