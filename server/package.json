@@ -34,7 +34,8 @@
     "passport-linkedin-oauth2": "github:auth0/passport-linkedin-oauth2",
     "puppeteer": "^22.8.0",
     "selenium": "^2.20.0",
-    "selenium-webdriver": "^4.20.0"
+    "selenium-webdriver": "^4.20.0",
+    "razorpay": "^2.9.4"
   },
   "devDependencies": {
     "nodemon": "^1.19.4"
