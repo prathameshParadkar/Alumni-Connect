@@ -9,7 +9,8 @@ const fundraiseSchema = new mongoose.Schema({
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' }, // or Alumni
     collegeId: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true },
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+    updatedAt: { type: Date, default: Date.now },
+    status: { type: String, enum: ['active', 'pending', 'inactive'], default: 'pending' }
 });
 
 const Fundraiser = mongoose.model('Fundraiser', fundraiseSchema);

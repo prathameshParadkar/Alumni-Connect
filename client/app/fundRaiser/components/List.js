@@ -17,9 +17,13 @@ const List = () => {
         fetch(`${url}/api/fundraiser`)
             .then(response => response.json())
             .then(data => {
-                
-                setFundraisers(data.data);
-                fetchAlumniNames(data.data);
+                let frs = data.data;
+                frs = frs.filter((fr) => (
+                    fr.status == 'active'
+                ))
+                console.log('fundraisers', frs)
+                setFundraisers(frs);
+                fetchAlumniNames(frs);
             })
             .catch(error => console.error('Error fetching fundraisers:', error));
     }, []);
@@ -82,44 +86,45 @@ const List = () => {
                         // console.log(createdBy)
                         const date = new Date(fundraiser.deadline).toLocaleDateString();
                         return (
-                        <li key={fundraiser._id}>
-                            <a href="/donation" className="block hover:bg-gray-50">
-                                <div className="px-4 py-4 sm:px-6">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-sm font-medium text-indigo-600 truncate">{fundraiser.title}</p>
-                                        <div className="flex-shrink-0 flex">
-                                            <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                {fundraiser.type}
-                                            </p>
+                            <li key={fundraiser._id}>
+                                <a href={`fundRaiser/${fundraiser._id}`} className="block hover:bg-gray-50">
+                                    <div className="px-4 py-4 sm:px-6">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-sm font-medium text-indigo-600 truncate">{fundraiser.title}</p>
+                                            <div className="flex-shrink-0 flex">
+                                                <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    {fundraiser.status}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-2 sm:flex sm:justify-between">
+                                            <div className="sm:flex">
+
+                                                <p className="mt-2 flex  text-sm text-gray-500 sm:mt-0 ">
+                                                    <UserIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                                    Created By {fundraiser.alumniName}
+                                                </p>
+                                            </div>
+                                            <p className='font-bold self-center text-sm text-gray-500'>₹{fundraiser.currentAmount}</p>
+                                            <div className="flex w-1/4 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${(fundraiser.currentAmount / fundraiser.targetAmount) * 100}%` }}> </div>
+                                            </div>
+                                            <p className='text-sm font-bold text-gray-500 self-center'>₹{fundraiser.targetAmount}</p>
+                                            <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+
+                                            </div>
+                                            <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                                                <CalendarIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                                <p>
+                                                    Closing on <time>{date}</time>
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="mt-2 sm:flex sm:justify-between">
-                                        <div className="sm:flex">
-                                            
-                                            <p className="mt-2 flex  text-sm text-gray-500 sm:mt-0 ">
-                                                <UserIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                                                Created By {fundraiser.alumniName}
-                                            </p>
-                                        </div>
-                                        <p className='font-bold self-center text-sm text-gray-500'>₹{fundraiser.currentAmount}</p>
-                                        <div className="flex w-1/4 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '15%' }}> </div>
-                                        </div>
-                                        <p className='text-sm font-bold text-gray-500 self-center'>₹{fundraiser.targetAmount}</p>
-                                        <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                                            
-                                        </div>
-                                        <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                                            <CalendarIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                                            <p>
-                                                Closing on <time>{date}</time>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
- )} )}
+                                </a>
+                            </li>
+                        )
+                    })}
                 </ul>
             </div>
         </>
