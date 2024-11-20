@@ -8,7 +8,8 @@ import {
     HomeIcon,
     MenuAlt2Icon,
     UsersIcon,
-    SearchIcon
+    SearchIcon,
+    PlusIcon
 } from "@heroicons/react/outline";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -32,8 +33,8 @@ export default function Sidebar({ children }) {
         { name: "Jobs", href: "/jobs", icon: UsersIcon, current: false },
         { name: "Events", href: "/events", icon: CalendarIcon, current: false },
         { name: "Fund Raiser", href: "/fundRaiser", icon: FolderIcon, current: false },
+        { name: "Add Alumni", href: "/add-alumni", icon: PlusIcon, current: false },
         { name: "Alumni Search", href: "/search", icon: SearchIcon, current: false },
-        // { name: "Documents", href: "#", icon: InboxIcon, current: false },
         // { name: "Reports", href: "#", icon: ChartBarIcon, current: false },
     ];
 
@@ -74,8 +75,11 @@ export default function Sidebar({ children }) {
         } else if (pathname.includes("fundRaiser")) {
             setCurrent(3);
 
-        } else if (pathname.includes("search")) {
+        }
+        else if (pathname.includes("add-alumni")) {
             setCurrent(4);
+        } else if (pathname.includes("search")) {
+            setCurrent(5);
         }
     });
     useEffect(() => {
