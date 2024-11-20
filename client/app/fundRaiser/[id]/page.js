@@ -22,7 +22,7 @@ const page = () => {
             .then((res) => {
                 console.log(res.data.data);
                 setFundraiser(res.data.data);
-                setDonations(res.data.data.donations);
+                setDonations(res.data.data.donations.sort((a, b) => new Date(b.date) - new Date(a.date)));
 
                 axios.post(`http://localhost:5000/api/alumniById`, { id: res.data.data.createdBy })
                     .then((res) => {

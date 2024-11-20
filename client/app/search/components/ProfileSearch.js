@@ -40,11 +40,11 @@ const ProfileSearch = () => {
         decodeToken(token);
     }, []);
     console.log("From profile page", user);
-    
+
     useEffect(() => {
         const fetchUserData = async () => {
             if (!user || !user.userId) return; // Ensure user object and userId are defined
-    
+
             try {
                 let apiEndpoint = '';
                 if (user.userType === 'alumni') {
@@ -52,7 +52,7 @@ const ProfileSearch = () => {
                 } else if (user.userType === 'student') {
                     apiEndpoint = 'http://localhost:5000/api/studentDetById';
                 }
-    
+
                 const response = await fetch(apiEndpoint, {
                     method: 'POST',
                     headers: {
@@ -60,17 +60,17 @@ const ProfileSearch = () => {
                     },
                     body: JSON.stringify({ id: user.userId }) // Ensure userId exists
                 });
-    
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
-    
+
                 const userData = await response.json();
                 console.log("user data", userData);
                 const skillsString = userData.skills.join(', ');
                 const workExpString = userData.work_experience.join(', ');
                 const educationString = userData.education.join(', ');
-    
+
                 // Prepare POST request body
                 const requestBody = {
                     flag: 1,
@@ -78,7 +78,7 @@ const ProfileSearch = () => {
                     education: educationString,
                     skills: skillsString
                 };
-    
+
                 // Make POST request to the new API
                 const postResponse = await fetch('http://localhost:3000/api', {
                     method: 'POST',
@@ -87,11 +87,11 @@ const ProfileSearch = () => {
                     },
                     body: JSON.stringify(requestBody)
                 });
-    
+
                 if (!postResponse.ok) {
                     throw new Error('Failed to post user data');
                 }
-    
+
                 const recommendation = await postResponse.json();
                 console.log("Recommendation result", recommendation);
                 setAlumni(recommendation);
@@ -101,7 +101,7 @@ const ProfileSearch = () => {
         };
         fetchUserData();
     }, [user]);
-    
+
 
 
     return (
@@ -122,7 +122,7 @@ const ProfileSearch = () => {
                 <ul role="list" className="divide-y divide-gray-200">
                     {alumni.map((alumnus) => (
                         <li key={alumnus._id}>
-                            <a href="https://www.linkedin.com/in/mursaleen-batatawala-717104259/" className="block hover:bg-gray-50">
+                            <a href={alumnus.Linkedin} target='_blank' className="block hover:bg-gray-50">
 
                                 <div className="px-4 py-4 sm:px-6 flex ">
                                     <div className='mr-4'>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Avatar, Button, Input, Tag, TagLabel, TagCloseButton, Box } from '@chakra-ui/react';
 import Select from 'react-select';
-import Cookies from 'js-cookie'; // Import js-cookie
+// import Cookies from 'js-cookie'; // Import js-cookie
 import jwtDecode from 'jwt-decode'; // Import jwt-decode
 import DatePicker from 'react-datepicker';
 import jwt from "jsonwebtoken";
@@ -107,7 +107,7 @@ const FormPage = () => {
         decodeToken(token);
     }, []);
 
-    console.log("From profile page",user);
+    console.log("From profile page", user);
     const addEducation = () => {
         setEducations([...educations, { name: '', level: '', startYear: '', endYear: '' }]);
     };
